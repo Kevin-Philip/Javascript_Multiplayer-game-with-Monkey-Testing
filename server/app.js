@@ -1,31 +1,82 @@
-var app = require('express')();
-var path = require('path');
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
-var usercount = 0;
 
-app.get('/', function(req, res){
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+var config = require('../config.json');
+
+var users = [];
+var food = [];
+var virus = [];
+var sockets = {};
+
+var leaderboard = [];
+var leaderboardChanged = false;
+
+app.use(express.static(__dirname + '/../client'));
+
+function createFood(numberToCreate) {
+  var radius = util.massToRadius(config.foodMass);
+    while (numberToCreate > 0) {
+        var position = util.randomPosition(radius);
+        food.push({
+            id: ((new Date()).getTime() + '' + food.length) >>> 0,
+            x: position.x,
+            y: position.y,
+            radius: radius,
+            mass: config.foodMass,
+        });
+        numberToCreate--;
+    }
+}
+
+function createVirus(numberToCreate) {
+  var radius = util.massToRadius(config.virusMass);
+    while (numberToCreate > 0) {
+        var position = util.randomPosition(radius);
+        virus.push({
+            id: ((new Date()).getTime() + '' + virus.length) >>> 0,
+            x: position.x,
+            y: position.y,
+            radius: radius,
+            mass: config.virusMass,
+        });
+        numberToCreate--;
+    }
+}
+
+function initGameWorld(){
+  
+}
+
+function movePlayer(player) {
+  
+}
+
+io.on('connection', (socket) => {
+  console.log('New player connecting!');
+  
+  var radius = util.massToRadius(config.defaultPlayerMass);
+  var position = util.randomPosition(radius);
+  
+
+  var currentPlayer = {
+    id: socket.id,
+    x: position.x,
+    y: position.y,
+    massTotal: config.defaultPlayerMass,
+    alive: true
+  };
+
+  socket.on('connect', (player) => {
+    console.log('[INFO] Player ' + player.name + ' connected!');
+    users.push(player);
+  });
+
 });
 
-io.on('connect', (socket) => {
-  socket.username = 'User'+ usercount;
-  usercount ++;
-  
-  socket.emit('message', 'You are ' + socket.username);
-  io.emit('message', socket.username + ' joined the channel.');
-  
-  socket.on('message', (msg) => {
-    io.emit('message', socket.username + ' said : '+ msg);
-  });
-  
-  socket.on('disconnect', function() {
-    usercount --;
-    io.emit('message', socket.username + ' left the channel.');
-  });
-});
-
-http.listen(port, function(){
-  console.log('listening on *: ' +port);
+var host = config.host;
+var port = config.port;
+http.listen( port, host, () => {
+    console.log('[DEBUG] Listening on ' + host + ':' + port);
 });
