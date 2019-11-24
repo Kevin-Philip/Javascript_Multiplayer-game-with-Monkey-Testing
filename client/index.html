@@ -1,39 +1,162 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
+
+<head>
+    <title>SR - The Game</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages { margin-bottom: 40px }
+        canvas {
+            display: block;
+            border: 5px solid black;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font: 13px Helvetica, Arial;
+        }
+        
+        form {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        form input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+        
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+        }
+        
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #messages li {
+            padding: 5px 10px;
+        }
+        
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+        
+        #messages {
+            margin-bottom: 40px
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
     <ul id="messages"></ul>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+        <input id="m" autocomplete="off" /><button>Send</button>
     </form>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-      $(function () {
-        var socket = io();
-        $('form').submit(function(){
-          socket.emit('message', $('#m').val());
-          $('#m').val('');
-          return false;
+        $(function() {
+            var canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d');
+
+            // resize the canvas to fill browser window dynamically
+            window.addEventListener('resize', resizeCanvas, false);
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth - 10;
+                canvas.height = window.innerHeight - 100;
+
+                /**
+                 * Your drawings need to be inside this function otherwise they will be reset when 
+                 * you resize the browser window and the canvas goes will be cleared.
+                 */
+            }
+            resizeCanvas();
+
+            var socket = io();
+
+            socket.on('draw', (players) => {
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                players.forEach(player => {
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                    ctx.closePath();
+                })
+            });
+
+            const playerMovement = {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            };
+
+            setInterval(() => {
+                socket.emit('movement', playerMovement, canvas.width, canvas.height);
+            }, 1000 / 60);
+
+            document.addEventListener('keydown', function(event) {
+                switch (event.keyCode) {
+                    case 81: // Q
+                        playerMovement.left = true;
+                        break;
+                    case 90: // Z
+                        playerMovement.up = true;
+                        break;
+                    case 68: // D
+                        playerMovement.right = true;
+                        break;
+                    case 83: // S
+                        playerMovement.down = true;
+                        break;
+                }
+            });
+            document.addEventListener('keyup', function(event) {
+                switch (event.keyCode) {
+                    case 81: // Q
+                        playerMovement.left = false;
+                        break;
+                    case 90: // Z
+                        playerMovement.up = false;
+                        break;
+                    case 68: // D
+                        playerMovement.right = false;
+                        break;
+                    case 83: // S
+                        playerMovement.down = false;
+                        break;
+                }
+            });
+
+            $('form').submit(function() {
+                socket.emit('message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+            socket.on('message', function(msg) {
+                $('#messages').append($('<li>').text(msg));
+                window.scrollTo(0, document.body.scrollHeight);
+            });
         });
-        socket.on('message', function(msg){
-          $('#messages').append($('<li>').text(msg));
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-      });
     </script>
-  </body>
+</body>
+
 </html>
