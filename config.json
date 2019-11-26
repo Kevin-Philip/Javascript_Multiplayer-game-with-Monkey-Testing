@@ -1,11 +1,13 @@
 {
     "host": "localhost",
     "port": 3000,
-    "gameWidth": 5000,
-    "gameHeight": 5000,
-    "maxFood": 1000,
-    "maxVirus" : 50,
+    "gameWidth": 500,
+    "gameHeight": 500,
+    "defaultFood": 20,
+    "defaultVirus" : 5,
     "defaultPlayerMass": 10,
-    "foodMass": 10,
-    "virusMass": 10
+    "foodMass": 2,
+    "virusMass": 10,
+    "playerSpeed" : 3,
+    "virusSpeed" : 3
 }
