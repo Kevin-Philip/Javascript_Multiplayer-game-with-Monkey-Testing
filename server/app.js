@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
                 socket.emit('message', 'You died !');
                 playerfile.resetPlayer(socket.id);
             }
-            gameboardfile.updateLeaderboard(socket.id);
+            gameboardfile.updateLeaderboard();
         }
     });
 
@@ -67,10 +67,10 @@ http.listen(port, host, () => {
 });
 
 // TODO :
-// Modifier la fonction util.randomPosition() pour ne pas pouvoir spawn sur une autre entité
+// Done : Modifier la fonction util.randomPosition() pour ne pas pouvoir spawn sur une autre entité
 // Modifier la génération de food et de virus en fonction du nombre de joueurs (+ il y a de joueurs, - on ajoute de virus)
 // Modifier le nombre de food/virus en cas de déconnection d'un utilisateur
-// Implémenter la fonction updateLeaderboard dans gameboard.js
+// Done : Implémenter la fonction updateLeaderboard dans gameboard.js
 // Afficher le leaderboard en front (nécessitera l'ajout d'un socket emit dans la fonction updateLeaderboard())
 // Rajouter l'interaction entre joueur dans la méthode interaction dans gameboard.js
 // Afficher le nom et le poid du joueur en front sur chaque cellule (taille de police proportionnelle à la taille du joueur)

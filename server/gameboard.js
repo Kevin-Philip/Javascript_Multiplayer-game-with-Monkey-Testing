@@ -24,13 +24,13 @@ function interaction(playerId){
     var player = playerfile.playerList[playerIndex];
 
     foodfile.foodList.forEach((food) => {
-        if (util.isInside(food, player)) {
+        if (util.isInteracting(food, player)) {
             interaction = true;
             playerfile.eatFood(playerIndex, foodfile.foodList.indexOf(food));
         }
     });
     virusfile.virusList.forEach((virus) => {
-        if (util.isInside(virus, player)) {
+        if (util.isInteracting(virus, player)) {
             interaction = true;
             playerfile.eatVirus(playerIndex, virusfile.virusList.indexOf(virus));
         }
@@ -39,7 +39,8 @@ function interaction(playerId){
 }
 
 function updateLeaderboard() {
-
+    playerListSorted = playerfile.playerList.sort((a, b) => (a.mass > b.mass) ? 1 : -1);
+    leaderboard = playerListSorted.slice(0, 5);
 }
 
 exports.initGameBoard = initGameBoard;

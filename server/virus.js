@@ -6,7 +6,7 @@ var virusList = [];
 function createVirus(numberToCreate) {
     var radius = util.massToRadius(config.virusMass);
     while (numberToCreate > 0) {
-        var position = util.randomPosition(radius);
+        var position = util.virusSpawn(radius);
         virusList.push({
             id: ((new Date()).getTime() + '' + virusList.length) >>> 0,
             x: position.x,

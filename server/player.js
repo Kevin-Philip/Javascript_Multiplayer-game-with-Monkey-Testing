@@ -14,7 +14,7 @@ function getPlayerIndex(playerId) {
 
 function createPlayer(playerId) {
     var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.randomPosition(radius);
+    var position = util.playerSpawn(radius);
     var currentPlayer = {
         id: playerId,
         x: position.x,
@@ -27,7 +27,7 @@ function createPlayer(playerId) {
 
 function resetPlayer(playerId) {
     var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.randomPosition(radius);
+    var position = util.playerSpawn(radius);
     playerIndex = getPlayerIndex(playerId);
     playerList[playerIndex] = {
         id: playerId,
