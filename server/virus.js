@@ -23,6 +23,12 @@ function createVirus(numberToCreate) {
     }
 }
 
+function removeVirus(numberToRemove){
+    for (i = 0; i < numberToRemove; i++){
+        virusList.pop();
+    }
+}
+
 function moveVirus() {
     var speed = config.virusSpeed
     virusList.forEach((virus) => {
@@ -42,5 +48,6 @@ function moveVirus() {
 }
 
 exports.createVirus = createVirus;
+exports.removeVirus = removeVirus;
 exports.moveVirus = moveVirus;
 exports.virusList = virusList;

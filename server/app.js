@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         var playerIndex = util.findIndex(playerfile.playerList, socket.id);
         if (playerIndex > -1) {
+            gameboardfile.removeVirusAndFood();
             playerfile.playerList.splice(playerIndex, 1);
             io.emit('message', socket.id + ' left the game');
             console.log('[INFO] Player ' + socket.id + ' left!');
@@ -65,10 +66,10 @@ http.listen(port, host, () => {
 });
 
 // TODO :
-// Done : Modifier la fonction util.randomPosition() pour ne pas pouvoir spawn sur une autre entité
-// Modifier la génération de food et de virus en fonction du nombre de joueurs (+ il y a de joueurs, - on ajoute de virus)
-// Modifier le nombre de food/virus en cas de déconnection d'un utilisateur
-// Done : Implémenter la fonction updateLeaderboard dans gameboard.js
+// Fini : Modifier la fonction util.randomPosition() pour ne pas pouvoir spawn sur une autre entité
+// Fini : Modifier la génération de food et de virus en fonction du nombre de joueurs (+ il y a de joueurs, - on ajoute de virus)
+// Fini : Modifier le nombre de food/virus en cas de déconnection d'un utilisateur
+// Fini : Implémenter la fonction updateLeaderboard dans gameboard.js
 // Afficher le leaderboard en front (nécessitera l'ajout d'un socket emit dans la fonction updateLeaderboard())
 // Rajouter l'interaction entre joueur dans la méthode interaction dans gameboard.js
 // Afficher le nom et le poid du joueur en front sur chaque cellule (taille de police proportionnelle à la taille du joueur)

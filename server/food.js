@@ -18,5 +18,12 @@ function createFood(numberToCreate) {
     }
 }
 
+function removeFood(numberToRemove){
+    for (i = 0; i < numberToRemove; i++){
+        foodList.pop();
+    }
+}
+
 exports.createFood = createFood;
+exports.removeFood = removeFood;
 exports.foodList = foodList;

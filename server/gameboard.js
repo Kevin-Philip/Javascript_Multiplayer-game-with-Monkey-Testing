@@ -8,8 +8,45 @@ var leaderboard = [];
 var sockets = [];
 
 function initGameBoard(){
-    foodfile.createFood(config.defaultFood);
-    virusfile.createVirus(config.defaultVirus);
+    var numbers = numberOfFoodAndVirusToCreateOrRemove();
+    foodfile.createFood(config.defaultFood - numbers.minusFood);
+    virusfile.createVirus(config.defaultVirus - numbers.minusVirus);
+}
+
+function removeVirusAndFood(){
+    var numbers = numberOfFoodAndVirusToCreateOrRemove();
+    foodfile.removeFood(config.defaultFood - numbers.minusFood);
+    virusfile.removeVirus(config.defaultVirus - numbers.minusVirus);
+}
+
+function numberOfFoodAndVirusToCreateOrRemove(){
+    var len = playerfile.playerList.length;
+    var defaultFood = config.defaultFood;
+    var defaultVirus = config.defaultVirus;
+    var minusFood = 0;
+    var minusVirus = 0;
+    var factor = 5;
+    if (len >=factor && len < (2*factor)) {
+        minusFood = defaultFood/factor;
+        minusVirus = defaultVirus/factor;
+    } else if (len >= (2*factor) && len < (3*factor)) {
+        minusFood = 2* defaultFood/factor;
+        minusVirus = 2* defaultVirus/factor;
+    } else if (len >= (3*factor) && len < (4*factor)) {
+        minusFood = 3* defaultFood/factor;
+        minusVirus = 3* defaultVirus/factor;
+    } else if (len >= (4*factor) && len < (5*factor)) {
+        minusFood = 4* defaultFood/factor;
+        minusVirus = 4* defaultVirus/factor;
+    } else if (len >= (5*factor)) {
+        minusFood = 5* defaultFood/factor;
+        minusVirus = 5* defaultVirus/factor;
+    }
+    var res = {
+        minusFood: minusFood,
+        minusVirus: minusVirus
+    }
+    return res;
 }
 
 function updateGameBoard() {
@@ -58,6 +95,7 @@ function interaction(){
 }
 
 exports.initGameBoard = initGameBoard;
+exports.removeVirusAndFood = removeVirusAndFood;
 exports.updateGameBoard = updateGameBoard;
 exports.gameLoop = gameLoop;
 exports.sockets = sockets;
