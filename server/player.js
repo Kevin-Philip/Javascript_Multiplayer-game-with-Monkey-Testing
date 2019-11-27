@@ -5,16 +5,13 @@ var virusfile = require('./virus.js');
 
 var playerList = [];
 
-function getPlayerIndex(playerId) {
-    var index = playerList.findIndex((player) => {
-        return player.id === playerId;
-    });
-    return index;
-}
-
 function createPlayer(playerId) {
     var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.playerSpawn(radius);
+    var position = util.randomPosition(radius);
+    while(util.isInContactWith(position, playerList) || util.isInContactWith(position, virusfile.virusList)){
+        console.log('[DEBUG] A player spawned in a virus or a player')
+        position = util.randomPosition(radius);
+    }
     var currentPlayer = {
         id: playerId,
         x: position.x,
@@ -25,10 +22,14 @@ function createPlayer(playerId) {
     playerList.push(currentPlayer);
 }
 
-function resetPlayer(playerId) {
+function respawnPlayer(playerId) {
     var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.playerSpawn(radius);
-    playerIndex = getPlayerIndex(playerId);
+    var position = util.randomPosition(radius);
+    while(util.isInContactWith(position, playerList) || util.isInContactWith(position, virusfile.virusList)){
+        console.log('[DEBUG] A player spawned in a virus or a player')
+        position = util.randomPosition(radius);
+    }
+    playerIndex = util.findIndex(playerList, playerId);
     playerList[playerIndex] = {
         id: playerId,
         x: position.x,
@@ -36,12 +37,6 @@ function resetPlayer(playerId) {
         radius: radius,
         mass: config.defaultPlayerMass,
     };
-}
-
-function removePlayer(playerId) {
-    playerList = playerList.filter((player) => {
-        return player.id != playerId;
-    });
 }
 
 function eatFood(playerIndex, foodIndex){
@@ -59,12 +54,12 @@ function eatVirus(playerIndex, virusIndex){
 }
 
 function isAlive(playerId){
-    var playerIndex = getPlayerIndex(playerId);
+    var playerIndex = util.findIndex(playerList, playerId);
     return playerList[playerIndex].mass >= config.defaultPlayerMass; 
 }
 
 function movePlayer(playerMovement, playerId) {
-    var playerIndex = getPlayerIndex(playerId);
+    var playerIndex = util.findIndex(playerList, playerId);
     var player = playerList[playerIndex];
     var speed = config.playerSpeed;
 
@@ -82,12 +77,10 @@ function movePlayer(playerMovement, playerId) {
     }
 }
 
-exports.getPlayerIndex = getPlayerIndex;
 exports.createPlayer = createPlayer;
-exports.resetPlayer = resetPlayer;
-exports.removePlayer = removePlayer;
+exports.respawnPlayer = respawnPlayer;
+exports.movePlayer = movePlayer;
 exports.eatFood = eatFood;
 exports.eatVirus = eatVirus;
 exports.isAlive = isAlive;
-exports.movePlayer = movePlayer;
 exports.playerList = playerList;

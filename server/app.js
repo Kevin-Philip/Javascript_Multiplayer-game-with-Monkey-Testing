@@ -3,53 +3,47 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+
 var config = require('../config.json');
+var util = require('./util.js');
 var playerfile = require('./player.js');
 var gameboardfile = require('./gameboard.js')
 
 app.use(express.static(__dirname + '/../client'));
 
-io.on('connection', (socket) => {
-    console.log('[INFO] New player connecting!');
 
-    // On créé un nouveau joueur
+
+io.on('connection', (socket) => {
+
+    console.log('[INFO] New player with id : ' + socket.id + 'is trying to connect!');
+
+    if (util.findIndex(playerfile.playerList, socket.id) > -1) {
+        console.log('[INFO] Player ID is already connected, kicking.');
+        socket.disconnect();
+    }
+    
+    // On créé un nouveau joueur, on stock son socket et on diffuse l'info
     playerfile.createPlayer(socket.id);
+    gameboardfile.sockets[socket.id] = socket;
+    console.log('[INFO] Player ' + socket.id + ' connected!');
+    io.emit('message', socket.id + ' joined the game !');    
 
     // On créé les foods & virus
     gameboardfile.initGameBoard();
 
-    // On diffuse dans le l'info qu'un nouveau joueur rejoind la partie
-    console.log('[INFO] Player ' + socket.id + ' connected!');
-    io.emit('message', socket.id + ' joined the game !');
-
-    // On veut afficher en permanence (60 fps) les changements sur le board puisque les virus bougent constament
-    // en millisecondes 1000/60 = 60fps
-    gameboardfile.refreshBoard(socket);
-    
     // Dans le cas d'une déconnection du joueur, on l'enlève de l'array des joueurs et on diffuse sa déconnection dans le chat
     socket.on('disconnect', () => {
-        playerfile.removePlayer(socket.id);
-        io.emit('message', socket.id + ' left the game');
-        console.log('[INFO] Player ' + socket.id + ' left!');
+        var playerIndex = util.findIndex(playerfile.playerList, socket.id);
+        if (playerIndex > -1) {
+            playerfile.playerList.splice(playerIndex, 1);
+            io.emit('message', socket.id + ' left the game');
+            console.log('[INFO] Player ' + socket.id + ' left!');
+        }
     });
 
-    // Dans le cas d'un mouvement, on déplace le joueur et on agit si il y a une interaction
+    // Dans le cas d'un mouvement, on déplace le joueur
     socket.on('movement', (playerMovement) => {
-
-        // On déplace le joueur
         playerfile.movePlayer(playerMovement, socket.id);
-
-        // On vérifie s'il y a une interaction avec un autre objet
-        var interaction = gameboardfile.interaction(socket.id);
-
-        // Si il y a eu une interaction, on vérifie que le joueur soit toujours en vie et on met à jour le leaderboard
-        if(interaction){
-            if(!playerfile.isAlive(socket.id)){
-                socket.emit('message', 'You died !');
-                playerfile.resetPlayer(socket.id);
-            }
-            gameboardfile.updateLeaderboard();
-        }
     });
 
     // On fait yoyo avec le front suite à l'envoie d'un message du joueur pour ajouter les informations nécessaires au message
@@ -58,6 +52,10 @@ io.on('connection', (socket) => {
     });
 
 });
+
+// On update presque constamment le game board et on affiche à 60fps les changements 
+setInterval(gameboardfile.updateGameBoard, 1000 / 60);
+setInterval(gameboardfile.gameLoop, 1000 / 60);
 
 // Configuration serveur
 var host = config.host;

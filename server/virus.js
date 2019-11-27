@@ -1,12 +1,17 @@
 var util = require('./util.js');
 var config = require('../config.json');
+var playerfile = require('./player.js');
 
 var virusList = [];
 
 function createVirus(numberToCreate) {
     var radius = util.massToRadius(config.virusMass);
     while (numberToCreate > 0) {
-        var position = util.virusSpawn(radius);
+        var position = util.randomPosition(radius);
+        while(util.isInContactWith(position, playerfile.playerList)){
+            console.log('[DEBUG] A virus spawned in a player')
+            position = util.randomPosition(radius);
+        }
         virusList.push({
             id: ((new Date()).getTime() + '' + virusList.length) >>> 0,
             x: position.x,

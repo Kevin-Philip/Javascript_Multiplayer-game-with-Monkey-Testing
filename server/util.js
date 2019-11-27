@@ -1,6 +1,4 @@
 var config = require('../config.json');
-var playerfile = require('./player.js');
-var virusfile = require('./virus.js');
 
 function massToRadius(mass) {
     if (mass <= 0) {
@@ -21,42 +19,35 @@ function randomPosition(radius) {
     return position;
 }
 
-function playerSpawn(radius){
-    var position = randomPosition(radius);
-    while(isInteractingList(position, playerfile.playerList) || isInteractingList(position, virusfile.virusList)){
-        console.log('[DEBUG] A player spawned in a virus or a player')
-        position = randomPosition(radius);
-    }
-    return position;
-}
-
-function virusSpawn(radius){
-    var position = randomPosition(radius);
-    while(isInteractingList(position, playerfile.playerList)){
-        console.log('[DEBUG] A virus spawned in a player')
-        position = randomPosition(radius);
-    }
-    return position
-}
-
-function isInteracting(object, entity) {
-    var dist_points = Math.pow((object.x - entity.x), 2) + Math.pow((object.y - entity.y), 2);
-    var radius = Math.pow(entity.radius, 2);
-    return dist_points < radius;
-}
-
-function isInteractingList(object, entities) {
+function isInContactWith(position, entities) {
     var res = false;
-    entitiesIndex = 0;
-    while (!res && (entitiesIndex < entities.length)) {
-        res = isInteracting(object, entities[entitiesIndex]);
-        entitiesIndex ++;
+    var len = entities.length;
+    while (!res && len>0) {
+        len --;
+        res = areInContact(position, entities[len]);
     }
     return res;
 }
 
-exports.isInteracting = isInteracting;
+function areInContact(first, second){
+    var dist_points = Math.pow((first.x - second.x), 2) + Math.pow((first.y - second.y), 2);
+    var radius = Math.pow(second.radius, 2);
+    return dist_points <= radius;
+}
+
+function findIndex(array, id){
+    var currentIndex = 0;
+    while (currentIndex < array.length) {
+        if (array[currentIndex].id === id) {
+            return currentIndex;
+        }
+        currentIndex ++;
+    }
+    return -1;
+}
+
 exports.massToRadius = massToRadius;
 exports.randomPosition = randomPosition;
-exports.playerSpawn = playerSpawn;
-exports.virusSpawn = virusSpawn;
+exports.findIndex = findIndex;
+exports.isInContactWith = isInContactWith;
+exports.areInContact = areInContact;
