@@ -89,7 +89,15 @@ function interaction(){
                 res = true;
                 playerfile.eatVirus(playerIndex, util.findIndex(virusfile.virusList, virus.id));
             }
-        })
+        });
+        playerfile.playerList.forEach((other) =>{
+            if(player.id != other.id){
+                if(util.areInContact(player, other)){
+                    res = true;
+                    playerfile.eatPlayer(playerIndex, util.findIndex(playerfile.playerList, other.id));
+                }
+            }
+        });
     });
     return res;
 }

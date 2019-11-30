@@ -53,6 +53,14 @@ function eatVirus(playerIndex, virusIndex){
     virusfile.createVirus(1);
 }
 
+function eatPlayer(playerIndex, otherIndex){
+    if(playerList[playerIndex].mass > playerList[otherIndex].mass){
+        playerList[playerIndex].mass += playerList[otherIndex].mass;
+        playerList[playerIndex].radius = util.massToRadius(playerList[playerIndex].mass);
+        playerList[otherIndex].mass = 0;
+    }
+}
+
 function isAlive(playerId){
     var playerIndex = util.findIndex(playerList, playerId);
     return playerList[playerIndex].mass >= config.defaultPlayerMass; 
@@ -82,5 +90,6 @@ exports.respawnPlayer = respawnPlayer;
 exports.movePlayer = movePlayer;
 exports.eatFood = eatFood;
 exports.eatVirus = eatVirus;
+exports.eatPlayer = eatPlayer;
 exports.isAlive = isAlive;
 exports.playerList = playerList;

@@ -70,12 +70,12 @@ http.listen(port, host, () => {
 // Fini : Modifier la génération de food et de virus en fonction du nombre de joueurs (+ il y a de joueurs, - on ajoute de virus)
 // Fini : Modifier le nombre de food/virus en cas de déconnection d'un utilisateur
 // Fini : Implémenter la fonction updateLeaderboard dans gameboard.js
+// Fini : Rajouter l'interaction entre joueur dans la méthode interaction dans gameboard.js et implémenter eatPlayer dans player.js
+// Fini : Bonus : Faire des trajectoires plus réalistes pour les virus
 // Afficher le leaderboard en front (nécessitera l'ajout d'un socket emit dans la fonction updateLeaderboard())
-// Rajouter l'interaction entre joueur dans la méthode interaction dans gameboard.js
 // Afficher le nom et le poid du joueur en front sur chaque cellule (taille de police proportionnelle à la taille du joueur)
 // Implémenter et refactor le code actuel pour permettre de rester tout le temps "centrer" sur notre joueur et de déplacer la caméra avec zqsd
 // Modifier ce tchat déguelasse
 // S'occuper du déploiement (docker ?)
 // Bonus : Infliger une "pénalité" de mort (ne pas pouvoir respawn tout de suite)
-// Bonus : Faire des trajectoires plus réalistes pour les virus
 // Bonus : Améliorer les graphismes
