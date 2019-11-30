@@ -9,5 +9,7 @@
     "foodMass": 2,
     "virusMass": 10,
     "playerSpeed" : 3,
-    "virusSpeed" : 3
+    "virusSpeed" : 3,
+    "ViruschangeDirectionFrequencyMax" : 50,
+    "ViruschangeDirectionFrequencyMin" : 3
 }
