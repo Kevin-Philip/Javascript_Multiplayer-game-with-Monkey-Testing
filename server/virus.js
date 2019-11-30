@@ -18,7 +18,7 @@ function createVirus(numberToCreate) {
             y: position.y,
             direction_x : 0,
             direction_y : 0,
-            changeDirectionFrequency : Math.floor(Math.random() * (config.ViruschangeDirectionFrequencyMax - config.ViruschangeDirectionFrequencyMin)+ config.ViruschangeDirectionFrequencyMin),
+            changeDirectionFrequency : Math.floor(Math.random() * (config.VirusChangeDirectionFrequencyMax - config.VirusChangeDirectionFrequencyMin)+ config.VirusChangeDirectionFrequencyMin),
             changeDirection : 0,
             radius: radius,
             mass: config.virusMass,

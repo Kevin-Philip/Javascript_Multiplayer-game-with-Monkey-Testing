@@ -7,17 +7,17 @@
         canvas {
             display: block;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font: 13px Helvetica, Arial;
         }
-        
+
         form {
             background: #000;
             padding: 3px;
@@ -25,35 +25,35 @@
             bottom: 0;
             width: 100%;
         }
-        
+
         form input {
             border: 0;
             padding: 10px;
             width: 90%;
             margin-right: .5%;
         }
-        
+
         form button {
             width: 9%;
             background: rgb(130, 224, 255);
             border: none;
             padding: 10px;
         }
-        
+
         #messages {
             list-style-type: none;
             margin: 0;
             padding: 0;
         }
-        
+
         #messages li {
             padding: 5px 10px;
         }
-        
+
         #messages li:nth-child(odd) {
             background: #eee;
         }
-        
+
         #messages {
             margin-bottom: 40px
         }
@@ -84,9 +84,26 @@
 
             var socket = io();
 
-            socket.on('draw', (players, food, virus) => {
+            socket.on('draw', (players, food, virus, playerIndex, width, height) => {
+                var x_player = players[playerIndex].x
+                var y_player = players[playerIndex].y
                 var ctx = canvas.getContext('2d');
+                ctx.save();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (x_player > canvas.width / 2 && x_player + canvas.width / 2 < width) {
+                    ctx.translate(canvas.width / 2 - x_player, 0);
+                }
+                else if (x_player + canvas.width / 2 >= width) {
+                    ctx.translate(canvas.width - width, 0);
+                }
+                if (y_player > canvas.height / 2 && y_player + canvas.height / 2 < height) {
+                    ctx.translate(0, canvas.height / 2 - y_player);
+                }
+                else if (y_player + canvas.height / 2 >= height) {
+                    ctx.translate(0, canvas.height - height);
+                }
+                ctx.fillStyle = "LightGray";
+                ctx.fillRect(0, 0, width, height);
                 players.forEach((player) => {
                     ctx.beginPath();
                     ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
@@ -108,7 +125,7 @@
                     ctx.fill();
                     ctx.closePath();
                 })
-                
+                ctx.restore();
             });
 
             const playerMovement = {
@@ -136,7 +153,7 @@
                         playerMovement.down = true;
                         break;
                 }
-                
+
             });
             document.addEventListener('keyup', (event) => {
                 switch (event.keyCode) {
@@ -160,7 +177,7 @@
                 $('#m').val('');
                 return false;
             });
-            socket.on('message', function(msg) {
+            socket.on('message', function (msg) {
                 $('#messages').append($('<li>').text(msg));
                 window.scrollTo(0, document.body.scrollHeight);
             });

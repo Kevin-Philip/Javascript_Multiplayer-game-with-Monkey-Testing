@@ -70,7 +70,8 @@ function updateGameBoard() {
 
 function gameLoop(){
     playerfile.playerList.forEach((player) => {
-        sockets[player.id].emit('draw', playerfile.playerList, foodfile.foodList, virusfile.virusList)
+        var playerIndex = util.findIndex(playerfile.playerList, player.id);
+        sockets[player.id].emit('draw', playerfile.playerList, foodfile.foodList, virusfile.virusList, playerIndex, config.gameWidth, config.gameHeight)
     });
 }
 
