@@ -1,15 +1,17 @@
 {
     "host": "localhost",
     "port": 3000,
+    "virusTracking": true,
     "gameWidth": 1500,
     "gameHeight": 1000,
-    "defaultFood": 20,
+    "defaultFood": 75,
     "defaultVirus" : 5,
     "defaultPlayerMass": 10,
     "foodMass": 2,
     "virusMass": 10,
-    "playerSpeed" : 3,
-    "virusSpeed" : 3,
-    "VirusChangeDirectionFrequencyMax" : 50,
-    "VirusChangeDirectionFrequencyMin" : 5
+    "playerSpeed" : 4,
+    "virusSpeed" : 2,
+    "virusChangeDirectionFrequencyMax" : 75,
+    "virusChangeDirectionFrequencyMin" : 10,
+    "virusChangeTargetFrequency" : 300
 }
