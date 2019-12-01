@@ -63,7 +63,7 @@ function updateGameBoard() {
         });
 
         // On met à jour le leaderboard
-        playerListSorted = playerfile.playerList.sort((a, b) => (a.mass > b.mass) ? 1 : -1);
+        playerListSorted = playerfile.playerList.sort((a, b) => (a.mass < b.mass) ? 1 : -1);
         leaderboard = playerListSorted.slice(0, 5);
     }
 }
@@ -71,7 +71,7 @@ function updateGameBoard() {
 function gameLoop(){
     playerfile.playerList.forEach((player) => {
         var playerIndex = util.findIndex(playerfile.playerList, player.id);
-        sockets[player.id].emit('draw', playerfile.playerList, foodfile.foodList, virusfile.virusList, playerIndex, config.gameWidth, config.gameHeight)
+        sockets[player.id].emit('draw', playerfile.playerList, foodfile.foodList, virusfile.virusList, playerIndex, config.gameWidth, config.gameHeight, leaderboard)
     });
 }
 

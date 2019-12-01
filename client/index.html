@@ -77,14 +77,14 @@
             window.addEventListener('resize', resizeCanvas, false);
 
             function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight - 100;
+                canvas.width = window.innerWidth-17; //taille d'un ascenseur
+                canvas.height = window.innerHeight - 100; //100 pour le chat
             }
             resizeCanvas();
 
             var socket = io();
 
-            socket.on('draw', (players, food, virus, playerIndex, width, height) => {
+            socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard) => {
                 var x_player = players[playerIndex].x
                 var y_player = players[playerIndex].y
                 var ctx = canvas.getContext('2d');
@@ -109,6 +109,9 @@
                     ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
                     ctx.fillStyle = 'blue';
                     ctx.fill();
+                    ctx.font = "10px Arial";
+                    ctx.fillStyle = "white";    
+                    ctx.fillText(player.mass, player.x-player.radius/2, player.y+player.radius/3);
                     ctx.closePath();
                 });
                 food.forEach((food) => {
@@ -126,6 +129,22 @@
                     ctx.closePath();
                 })
                 ctx.restore();
+                var positionLeaderboard = 35;
+                var largeurLeaderboard = 310;
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("Leaderboard", canvas.width-largeurLeaderboard+25, positionLeaderboard);
+                positionLeaderboard += 40;
+                leaderboard.forEach((player) => {
+                    ctx.font = "20px Arial";
+                    ctx.fillStyle = "white";    
+                    ctx.fillText(player.id + " : "+player.mass, canvas.width-largeurLeaderboard+10, positionLeaderboard);
+                    ctx.closePath();
+                    positionLeaderboard += 25;
+                });
+                context.fillStyle="#FFFFFF";
+                context.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(canvas.width-largeurLeaderboard, 0, canvas.width, positionLeaderboard);
             });
 
             const playerMovement = {
