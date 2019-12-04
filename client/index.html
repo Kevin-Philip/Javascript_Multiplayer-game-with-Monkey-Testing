@@ -40,7 +40,7 @@
             padding: 10px;
         }
 
-        #messages {
+        /* #messages {
             list-style-type: none;
             margin: 0;
             padding: 0;
@@ -56,13 +56,13 @@
 
         #messages {
             margin-bottom: 40px
-        }
+        } */
     </style>
 </head>
 
 <body>
     <canvas id="canvas"></canvas>
-    <ul id="messages"></ul>
+    <!-- <ul id="messages"></ul> -->
     <form action="">
         <input id="m" autocomplete="off" /><button>Send</button>
     </form>
@@ -72,13 +72,15 @@
         $(() => {
             var canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d');
+            
+            var messages = [];
 
             // resize the canvas to fill browser window dynamically
             window.addEventListener('resize', resizeCanvas, false);
 
             function resizeCanvas() {
                 canvas.width = window.innerWidth-17; //taille d'un ascenseur
-                canvas.height = window.innerHeight - 100; //100 pour le chat
+                canvas.height = window.innerHeight-41; //100 pour le chat
             }
             resizeCanvas();
 
@@ -88,8 +90,8 @@
                 var x_player = players[playerIndex].x
                 var y_player = players[playerIndex].y
                 var ctx = canvas.getContext('2d');
-                ctx.save();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
                 if (x_player > canvas.width / 2 && x_player + canvas.width / 2 < width) {
                     ctx.translate(canvas.width / 2 - x_player, 0);
                 }
@@ -129,22 +131,36 @@
                     ctx.closePath();
                 })
                 ctx.restore();
-                var positionLeaderboard = 35;
+                //Leaderboard
+                var decalage = 35;
                 var largeurLeaderboard = 310;
                 ctx.font = "30px Arial";
                 ctx.fillStyle = "white";
-                ctx.fillText("Leaderboard", canvas.width-largeurLeaderboard+25, positionLeaderboard);
-                positionLeaderboard += 40;
+                ctx.fillText("Leaderboard", canvas.width-largeurLeaderboard+25, decalage);
+                decalage += 40;
                 leaderboard.forEach((player) => {
                     ctx.font = "20px Arial";
                     ctx.fillStyle = "white";    
-                    ctx.fillText(player.id + " : "+player.mass, canvas.width-largeurLeaderboard+10, positionLeaderboard);
-                    ctx.closePath();
-                    positionLeaderboard += 25;
+                    ctx.fillText(player.id + " : "+player.mass, canvas.width-largeurLeaderboard+10, decalage);
+                    decalage += 25;
                 });
                 context.fillStyle="#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.fillRect(canvas.width-largeurLeaderboard, 0, canvas.width, positionLeaderboard);
+                ctx.fillRect(canvas.width-largeurLeaderboard, 0, canvas.width, decalage);
+
+                //chat
+                decalage = 15;
+                ctx.font = "12px Arial";
+                ctx.fillStyle = "white";
+                var prout = messages.reverse();
+                prout = prout.slice(0, 5);
+                prout.forEach((message) => {
+                    ctx.fillText(message, 5 , canvas.height-decalage);
+                    decalage += 15;
+                });
+                context.fillStyle="#FFFFFF";
+                context.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, canvas.height-decalage, 300, canvas.height);
             });
 
             const playerMovement = {
@@ -197,8 +213,9 @@
                 return false;
             });
             socket.on('message', function (msg) {
-                $('#messages').append($('<li>').text(msg));
-                window.scrollTo(0, document.body.scrollHeight);
+                messages.push(msg);
+                console.log(messages)
+                //$('#messages').append($('<li>').text(msg));
             });
         });
     </script>

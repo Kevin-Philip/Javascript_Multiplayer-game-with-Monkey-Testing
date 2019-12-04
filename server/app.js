@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
     // On fait yoyo avec le front suite à l'envoie d'un message du joueur pour ajouter les informations nécessaires au message
     socket.on('message', (msg) => {
-        io.emit('message', currentPlayer.id + ' said : ' + msg);
+        io.emit('message', socket.id + ' said : ' + msg);
     });
 
 });
