@@ -152,9 +152,8 @@
                 decalage = 15;
                 ctx.font = "12px Arial";
                 ctx.fillStyle = "white";
-                var prout = messages.reverse();
-                prout = prout.slice(0, 5);
-                prout.forEach((message) => {
+                var reversedMessages = [...messages];
+                reversedMessages.reverse().slice(0,5).forEach((message) => {
                     ctx.fillText(message, 5 , canvas.height-decalage);
                     decalage += 15;
                 });
