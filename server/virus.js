@@ -38,11 +38,11 @@ function removeVirus(numberToRemove) {
 function moveVirus() {
     var speed = config.virusSpeed;
     virusList.forEach((virus) => {
-        if (config.virusTracking && virus.changeTarget == config.virusChangeTargetFrequency) {
+        if (config.virusTracking && (virus.changeTarget === config.virusChangeTargetFrequency)) {
             virus.target = playerfile.playerList[Math.floor(Math.random() * (playerfile.playerList.length))];
             virus.changeTarget = 0;
         }
-        if (virus.changeDirection == virus.changeDirectionFrequency) {
+        if (virus.changeDirection === virus.changeDirectionFrequency) {
             if (config.virusTracking) {
                 virus.direction_x = virus.x < virus.target.x;
                 virus.direction_y = virus.y < virus.target.y;

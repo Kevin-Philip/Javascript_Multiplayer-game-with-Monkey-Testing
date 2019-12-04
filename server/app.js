@@ -7,7 +7,7 @@ var io = require('socket.io')(http);
 var config = require('../config.json');
 var util = require('./util.js');
 var playerfile = require('./player.js');
-var gameboardfile = require('./gameboard.js')
+var gameboardfile = require('./gameboard.js');
 
 app.use(express.static(__dirname + '/../client'));
 
@@ -72,10 +72,13 @@ http.listen(port, host, () => {
 // Fini : Implémenter la fonction updateLeaderboard dans gameboard.js
 // Fini : Rajouter l'interaction entre joueur dans la méthode interaction dans gameboard.js et implémenter eatPlayer dans player.js
 // Fini : Bonus : Faire des trajectoires plus réalistes pour les virus
-// Afficher le leaderboard en front (nécessitera l'ajout d'un socket emit dans la fonction updateLeaderboard())
-// Afficher le nom et le poid du joueur en front sur chaque cellule (taille de police proportionnelle à la taille du joueur)
-// Implémenter et refactor le code actuel pour permettre de rester tout le temps "centrer" sur notre joueur et de déplacer la caméra avec zqsd
+// Fini : Afficher le leaderboard en front (nécessitera l'ajout d'un socket emit dans la fonction updateLeaderboard())
+// Fini : Afficher le nom et le poid du joueur en front sur chaque cellule (taille de police proportionnelle à la taille du joueur)
+// Fini : Implémenter le code pour permettre de rester tout le temps "centrer" sur notre joueur et de déplacer la caméra avec zqsd
+// Refactor le code client
+// Linter le code back
+// Voir pour obliger le control+0 si le zoom n'est pas à 100%
 // Modifier ce tchat déguelasse
-// S'occuper du déploiement (docker ?)
+// S'occuper du déploiement sur vm istic (voir pour docker)
 // Bonus : Infliger une "pénalité" de mort (ne pas pouvoir respawn tout de suite)
 // Bonus : Améliorer les graphismes
