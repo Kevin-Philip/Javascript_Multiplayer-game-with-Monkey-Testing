@@ -15,5 +15,11 @@
         "ecmaVersion": 2018
     },
     "rules": {
+        "linebreak-style": 0,
+        "global-require": 0,
+        "eslint linebreak-style": [0, "error", "windows"],
+        "no-console": 0,
+        "no-bitwise": 0,
+        "no-param-reassign": 0
     }
 }

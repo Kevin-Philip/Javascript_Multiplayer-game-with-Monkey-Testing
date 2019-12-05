@@ -1,95 +1,90 @@
-var util = require('./util.js');
-var config = require('../config.json');
-var foodfile = require('./food.js');
-var virusfile = require('./virus.js');
+import {
+  massToRadius, randomPosition, isInContactWith, findIndex,
+} from './util';
+import {
+  defaultPlayerMass, playerSpeed, gameWidth, gameHeight,
+} from './config.json';
+import { foodList, createFood } from './food';
+import { virusList, createVirus } from './virus';
 
-var playerList = [];
+export const playerList = [];
 
-function createPlayer(playerId) {
-    var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.randomPosition(radius);
-    while(util.isInContactWith(position, playerList) || util.isInContactWith(position, virusfile.virusList)){
-        console.log('[DEBUG] A player spawned in a virus or a player')
-        position = util.randomPosition(radius);
-    }
-    var currentPlayer = {
-        id: playerId,
-        x: position.x,
-        y: position.y,
-        radius: radius,
-        mass: config.defaultPlayerMass,
-    };
-    playerList.push(currentPlayer);
+export function createPlayer(playerId) {
+  const radius = massToRadius(defaultPlayerMass);
+  let position = randomPosition(radius);
+  while (isInContactWith(position, playerList) || isInContactWith(position, virusList)) {
+    console.log('[DEBUG] A player spawned in a virus or a player');
+    position = randomPosition(radius);
+  }
+  const currentPlayer = {
+    id: playerId,
+    x: position.x,
+    y: position.y,
+    radius,
+    mass: defaultPlayerMass,
+  };
+  playerList.push(currentPlayer);
 }
 
-function respawnPlayer(playerId) {
-    var radius = util.massToRadius(config.defaultPlayerMass);
-    var position = util.randomPosition(radius);
-    while(util.isInContactWith(position, playerList) || util.isInContactWith(position, virusfile.virusList)){
-        console.log('[DEBUG] A player spawned in a virus or a player')
-        position = util.randomPosition(radius);
-    }
-    playerIndex = util.findIndex(playerList, playerId);
-    playerList[playerIndex] = {
-        id: playerId,
-        x: position.x,
-        y: position.y,
-        radius: radius,
-        mass: config.defaultPlayerMass,
-    };
+export function respawnPlayer(playerId) {
+  const radius = massToRadius(defaultPlayerMass);
+  let position = randomPosition(radius);
+  while (isInContactWith(position, playerList) || isInContactWith(position, virusList)) {
+    console.log('[DEBUG] A player spawned in a virus or a player');
+    position = randomPosition(radius);
+  }
+  const playerIndex = findIndex(playerList, playerId);
+  playerList[playerIndex] = {
+    id: playerId,
+    x: position.x,
+    y: position.y,
+    radius,
+    mass: defaultPlayerMass,
+  };
 }
 
-function eatFood(playerIndex, foodIndex){
-    playerList[playerIndex].mass += foodfile.foodList[foodIndex].mass;
-    foodfile.foodList.splice(foodIndex, 1);
-    playerList[playerIndex].radius = util.massToRadius(playerList[playerIndex].mass);
-    foodfile.createFood(1);
+export function eatFood(playerIndex, foodIndex) {
+  playerList[playerIndex].mass += foodList[foodIndex].mass;
+  foodList.splice(foodIndex, 1);
+  playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
+  createFood(1);
 }
 
-function eatVirus(playerIndex, virusIndex){
-    playerList[playerIndex].mass -= virusfile.virusList[virusIndex].mass
-    virusfile.virusList.splice(virusIndex, 1)
-    playerList[playerIndex].radius = util.massToRadius(playerList[playerIndex].mass);
-    virusfile.createVirus(1);
+export function eatVirus(playerIndex, virusIndex) {
+  playerList[playerIndex].mass -= virusList[virusIndex].mass;
+  virusList.splice(virusIndex, 1);
+  playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
+  createVirus(1);
 }
 
-function eatPlayer(playerIndex, otherIndex){
-    if(playerList[playerIndex].mass > playerList[otherIndex].mass){
-        playerList[playerIndex].mass += playerList[otherIndex].mass;
-        playerList[playerIndex].radius = util.massToRadius(playerList[playerIndex].mass);
-        playerList[otherIndex].mass = 0;
-    }
+export function eatPlayer(playerIndex, otherIndex) {
+  if (playerList[playerIndex].mass > playerList[otherIndex].mass) {
+    playerList[playerIndex].mass += playerList[otherIndex].mass;
+    playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
+    playerList[otherIndex].mass = 0;
+  }
 }
 
-function isAlive(playerId){
-    var playerIndex = util.findIndex(playerList, playerId);
-    return playerList[playerIndex].mass >= config.defaultPlayerMass; 
+export function isAlive(playerId) {
+  const playerIndex = findIndex(playerList, playerId);
+  return playerList[playerIndex].mass >= defaultPlayerMass;
 }
 
-function movePlayer(playerMovement, playerId) {
-    var playerIndex = util.findIndex(playerList, playerId);
-    var player = playerList[playerIndex];
-    var speed = config.playerSpeed;
+export function movePlayer(playerMovement, playerId) {
+  const playerIndex = findIndex(playerList, playerId);
+  const player = playerList[playerIndex];
+  const speed = playerSpeed;
 
-    if (playerMovement.left && player.x > 0 + player.radius) {
-        playerList[playerIndex].x -= speed
-    }
-    if (playerMovement.right && player.x < config.gameWidth - player.radius) {
-        playerList[playerIndex].x += speed
-    }
-    if (playerMovement.up && player.y > 0 + player.radius) {
-        playerList[playerIndex].y -= speed
-    }
-    if (playerMovement.down && player.y < config.gameHeight - player.radius) {
-        playerList[playerIndex].y += speed
-    }
+  if (playerMovement.left && player.x > 0 + player.radius) {
+    playerList[playerIndex].x -= speed;
+  }
+  if (playerMovement.right && player.x < gameWidth - player.radius) {
+    playerList[playerIndex].x += speed;
+  }
+  if (playerMovement.up && player.y > 0 + player.radius) {
+    playerList[playerIndex].y -= speed;
+  }
+  if (playerMovement.down && player.y < gameHeight - player.radius) {
+    playerList[playerIndex].y += speed;
+  }
 }
-
-exports.createPlayer = createPlayer;
-exports.respawnPlayer = respawnPlayer;
-exports.movePlayer = movePlayer;
-exports.eatFood = eatFood;
-exports.eatVirus = eatVirus;
-exports.eatPlayer = eatPlayer;
-exports.isAlive = isAlive;
-exports.playerList = playerList;
