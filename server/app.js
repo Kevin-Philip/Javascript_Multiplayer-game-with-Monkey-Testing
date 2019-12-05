@@ -3,15 +3,12 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-
 var config = require('../config.json');
 var util = require('./util.js');
 var playerfile = require('./player.js');
 var gameboardfile = require('./gameboard.js');
 
 app.use(express.static(__dirname + '/../client'));
-
-
 
 io.on('connection', (socket) => {
 
@@ -78,7 +75,8 @@ http.listen(port, host, () => {
 // Refactor le code client
 // Linter le code back
 // Voir pour obliger le control+0 si le zoom n'est pas à 100%
-// Modifier ce tchat déguelasse
+// Fini : Modifier ce tchat déguelasse
 // S'occuper du déploiement sur vm istic (voir pour docker)
 // Bonus : Infliger une "pénalité" de mort (ne pas pouvoir respawn tout de suite)
 // Bonus : Améliorer les graphismes
+// Bonus : Rajouter du son
