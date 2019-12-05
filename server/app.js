@@ -65,11 +65,11 @@ http.listen(port, host, () => {
 });
 
 // TODO :
+// Fini : Infliger une "pénalité" de mort (ne pas pouvoir respawn tout de suite)
+// Fini : Rajouter du son
 // Refactor le code client
 // Linter le code back
 // Voir pour obliger le control+0 si le zoom n'est pas à 100%
 // Adapter le chat à la longueur des messages
 // S'occuper du déploiement sur vm istic (voir pour docker)
-// Bonus : Infliger une "pénalité" de mort (ne pas pouvoir respawn tout de suite)
 // Bonus : Améliorer les graphismes
-// Bonus : Rajouter du son

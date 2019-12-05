@@ -22,6 +22,7 @@ export function createPlayer(playerId) {
     y: position.y,
     radius,
     mass: defaultPlayerMass,
+    alive: true
   };
   playerList.push(currentPlayer);
 }
@@ -40,6 +41,7 @@ export function respawnPlayer(playerId) {
     y: position.y,
     radius,
     mass: defaultPlayerMass,
+    alive: true
   };
 }
 
@@ -67,7 +69,7 @@ export function eatPlayer(playerIndex, otherIndex) {
 
 export function isAlive(playerId) {
   const playerIndex = findIndex(playerList, playerId);
-  return playerList[playerIndex].mass >= defaultPlayerMass;
+  return playerList[playerIndex].mass > 0;
 }
 
 export function movePlayer(playerMovement, playerId) {

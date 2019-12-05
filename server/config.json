@@ -13,5 +13,6 @@
     "virusSpeed" : 2,
     "virusChangeDirectionFrequencyMax" : 75,
     "virusChangeDirectionFrequencyMin" : 10,
-    "virusChangeTargetFrequency" : 300
+    "virusChangeTargetFrequency" : 300,
+    "respawnTimeout" : 5000
 }

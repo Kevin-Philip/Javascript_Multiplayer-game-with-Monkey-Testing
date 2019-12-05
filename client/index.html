@@ -39,24 +39,6 @@
             border: none;
             padding: 10px;
         }
-
-        /* #messages {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        #messages li {
-            padding: 5px 10px;
-        }
-
-        #messages li:nth-child(odd) {
-            background: #eee;
-        }
-
-        #messages {
-            margin-bottom: 40px
-        } */
     </style>
 </head>
 
@@ -66,6 +48,18 @@
     <form action="">
         <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+    <audio id="damageSound">
+        <source src="./roblox-death-sound.mp3" type="audio/ogg">
+    </audio>
+    <audio id="diedSound">
+        <source src="./dark-souls-you-died-sound.mp3" type="audio/ogg">
+    </audio>
+    <audio id="eatSound">
+        <source src="./eat.mp3" type="audio/ogg">
+    </audio>
+    <audio id="music">
+        <source src="./ievan-polkka.mp3" type="audio/ogg">
+    </audio>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
@@ -79,14 +73,46 @@
             window.addEventListener('resize', resizeCanvas, false);
 
             function resizeCanvas() {
-                canvas.width = window.innerWidth-17; //taille d'un ascenseur
-                canvas.height = window.innerHeight-41; //100 pour le chat
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight-41; //-41 pour le chat
             }
             resizeCanvas();
 
             var socket = io();
 
+            socket.on('died', () => {
+                music.pause();
+                music.currentTime = 0;
+                diedSound.currentTime = 0;
+                diedSound.play();
+                console.log("died");
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "Gray";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "50px Arial";
+                ctx.textAlign = 'center';
+                ctx.fillStyle = "red";
+                ctx.fillText("YOU DIED !", canvas.width / 2, canvas.height / 2);
+                ctx.textAlign = 'left';
+            })
+
+            socket.on('damage', () => {
+                damageSound.currentTime = 0;
+                damageSound.play();
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = "red";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            })
+
+            socket.on('eat', () => {
+                eatSound.currentTime = 0;
+                eatSound.play();
+            })
+
             socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard) => {
+                music.play();
+                music.volume = 0.2;
                 var x_player = players[playerIndex].x
                 var y_player = players[playerIndex].y
                 var ctx = canvas.getContext('2d');
@@ -213,8 +239,6 @@
             });
             socket.on('message', function (msg) {
                 messages.push(msg);
-                console.log(messages)
-                //$('#messages').append($('<li>').text(msg));
             });
         });
     </script>

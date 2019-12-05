@@ -1,6 +1,6 @@
 import { findIndex, areInContact } from './util';
 import config, {
-  defaultFood as _defaultFood, defaultVirus as _defaultVirus, gameWidth, gameHeight,
+  defaultFood as _defaultFood, defaultVirus as _defaultVirus, gameWidth, gameHeight, respawnTimeout,
 } from './config.json';
 import {
   playerList, eatFood, eatVirus, eatPlayer, isAlive, respawnPlayer,
@@ -12,6 +12,7 @@ import { foodList, createFood, removeFood } from './food';
 
 let leaderboard = [];
 export const sockets = [];
+let damage = false;
 
 export function interaction() {
   let res = false;
@@ -19,14 +20,22 @@ export function interaction() {
     const playerIndex = findIndex(playerList, player.id);
     foodList.forEach((food) => {
       if (areInContact(food, player)) {
+        sockets[player.id].emit("eat");
         res = true;
         eatFood(playerIndex, findIndex(foodList, food.id));
       }
     });
     virusList.forEach((virus) => {
       if (areInContact(virus, player)) {
-        res = true;
         eatVirus(playerIndex, findIndex(virusList, virus.id));
+        if (isAlive(player.id)) {
+          sockets[player.id].emit("damage");
+          damage = true;
+          setTimeout(() => {
+            damage = false;
+          }, 10);
+        }
+        res = true;
       }
     });
     playerList.forEach((other) => {
@@ -91,20 +100,26 @@ export function updateGameBoard() {
   if (interactionHappend) {
     playerList.forEach((player) => {
       if (!isAlive(player.id)) {
+        player.alive = false;
+        sockets[player.id].emit('died');
+        setTimeout(() => {
+          respawnPlayer(player.id);
+        }, 5000);
+        sockets[player.id].emit('died');
         sockets[player.id].emit('message', 'You died !');
-        respawnPlayer(player.id);
       }
     });
-
-    // On met à jour le leaderboard
-    const playerListSorted = playerList.sort((a, b) => ((a.mass < b.mass) ? 1 : -1));
-    leaderboard = playerListSorted.slice(0, 5);
   }
 }
 
 export function gameLoop() {
   playerList.forEach((player) => {
-    const playerIndex = findIndex(playerList, player.id);
-    sockets[player.id].emit('draw', playerList, foodList, virusList, playerIndex, gameWidth, gameHeight, leaderboard);
+    if (player.alive && !damage) {
+      const playerIndex = findIndex(playerList, player.id);
+      sockets[player.id].emit('draw', playerList, foodList, virusList, playerIndex, gameWidth, gameHeight, leaderboard);
+    }
   });
+  // On met à jour le leaderboard
+  const playerListSorted = playerList.sort((a, b) => ((a.mass < b.mass) ? 1 : -1));
+  leaderboard = playerListSorted.slice(0, 5);
 }
