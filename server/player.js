@@ -2,10 +2,11 @@ import {
   massToRadius, randomPosition, isInContactWith, findIndex,
 } from './util';
 import {
-  defaultPlayerMass, playerSpeed, gameWidth, gameHeight,
+  defaultPlayerMass, playerSpeed, gameWidth, gameHeight, virusTracking,
 } from './config.json';
 import { foodList, createFood } from './food';
 import { virusList, createVirus } from './virus';
+import { sockets } from './gameboard';
 
 export const playerList = [];
 
@@ -22,6 +23,7 @@ export function createPlayer(playerId) {
     y: position.y,
     radius,
     mass: defaultPlayerMass,
+    speed: playerSpeed,
     alive: true
   };
   playerList.push(currentPlayer);
@@ -41,11 +43,46 @@ export function respawnPlayer(playerId) {
     y: position.y,
     radius,
     mass: defaultPlayerMass,
+    speed: playerSpeed,
     alive: true
   };
 }
 
 export function eatFood(playerIndex, foodIndex) {
+  if (foodList[foodIndex].magic){
+    let power = Math.floor(Math.random() * 6)
+    if (power === 0){
+      foodList[foodIndex].mass *= 10;
+    }
+    if (power === 1){
+      sockets[playerList[playerIndex].id].emit("speedUp");
+      playerList[playerIndex].speed *= 3;
+      setTimeout(() => {
+        playerList[playerIndex].speed /= 3;
+      }, 5000);
+    }
+    if(power === 2 || power === 3){
+      let position;
+      virusList.forEach((virus) => {
+        if(virus.target.id === playerList[playerIndex].id){
+          position = randomPosition(massToRadius(virus.mass));
+          virus.x = position.x;
+          virus.y = position.y
+        }
+    });
+    }
+    if (power === 4){
+      let oldMass = playerList[playerIndex].mass;
+      playerList[playerIndex].mass = 1;
+      setTimeout(() => {
+        playerList[playerIndex].mass = oldMass+50;
+        playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
+      }, 8000);
+    }
+    if (power === 5){
+      createVirus(1);
+    }
+  }
   playerList[playerIndex].mass += foodList[foodIndex].mass;
   foodList.splice(foodIndex, 1);
   playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
@@ -75,7 +112,7 @@ export function isAlive(playerId) {
 export function movePlayer(playerMovement, playerId) {
   const playerIndex = findIndex(playerList, playerId);
   const player = playerList[playerIndex];
-  const speed = playerSpeed;
+  const speed = playerList[playerIndex].speed;
 
   if (playerMovement.left && player.x > 0 + player.radius) {
     playerList[playerIndex].x -= speed;

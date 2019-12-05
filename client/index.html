@@ -66,7 +66,7 @@
         $(() => {
             var canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d');
-            
+
             var messages = [];
 
             // resize the canvas to fill browser window dynamically
@@ -74,7 +74,7 @@
 
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight-41; //-41 pour le chat
+                canvas.height = window.innerHeight - 41; //-41 pour le chat
             }
             resizeCanvas();
 
@@ -110,6 +110,13 @@
                 eatSound.play();
             })
 
+            socket.on('speedUp', () => {
+                music.playbackRate = 1.5;
+                setTimeout(() => {
+                    music.playbackRate = 1;
+                }, 5000);
+            })
+
             socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard) => {
                 music.play();
                 music.volume = 0.2;
@@ -138,14 +145,17 @@
                     ctx.fillStyle = 'blue';
                     ctx.fill();
                     ctx.font = "10px Arial";
-                    ctx.fillStyle = "white";    
-                    ctx.fillText(player.mass, player.x-player.radius/2, player.y+player.radius/3);
+                    ctx.fillStyle = "white";
+                    ctx.fillText(player.mass, player.x - player.radius / 2, player.y + player.radius / 3);
                     ctx.closePath();
                 });
                 food.forEach((food) => {
+                    ctx.fillStyle = 'green';
+                    if (food.magic) {
+                        ctx.fillStyle = 'purple';
+                    }
                     ctx.beginPath();
                     ctx.arc(food.x, food.y, food.radius, 0, 2 * Math.PI, false);
-                    ctx.fillStyle = 'green';
                     ctx.fill();
                     ctx.closePath();
                 });
@@ -162,30 +172,30 @@
                 var largeurLeaderboard = 310;
                 ctx.font = "30px Arial";
                 ctx.fillStyle = "white";
-                ctx.fillText("Leaderboard", canvas.width-largeurLeaderboard+25, decalage);
+                ctx.fillText("Leaderboard", canvas.width - largeurLeaderboard + 25, decalage);
                 decalage += 40;
                 leaderboard.forEach((player) => {
                     ctx.font = "20px Arial";
-                    ctx.fillStyle = "white";    
-                    ctx.fillText(player.id + " : "+player.mass, canvas.width-largeurLeaderboard+10, decalage);
+                    ctx.fillStyle = "white";
+                    ctx.fillText(player.id + " : " + player.mass, canvas.width - largeurLeaderboard + 10, decalage);
                     decalage += 25;
                 });
-                context.fillStyle="#FFFFFF";
+                context.fillStyle = "#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.fillRect(canvas.width-largeurLeaderboard, 0, canvas.width, decalage);
+                ctx.fillRect(canvas.width - largeurLeaderboard, 0, canvas.width, decalage);
 
                 //chat
                 decalage = 15;
                 ctx.font = "12px Arial";
                 ctx.fillStyle = "white";
                 var reversedMessages = [...messages];
-                reversedMessages.reverse().slice(0,5).forEach((message) => {
-                    ctx.fillText(message, 5 , canvas.height-decalage);
+                reversedMessages.reverse().slice(0, 5).forEach((message) => {
+                    ctx.fillText(message, 5, canvas.height - decalage);
                     decalage += 15;
                 });
-                context.fillStyle="#FFFFFF";
+                context.fillStyle = "#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.fillRect(0, canvas.height-decalage, 300, canvas.height);
+                ctx.fillRect(0, canvas.height - decalage, 300, canvas.height);
             });
 
             const playerMovement = {
