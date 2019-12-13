@@ -1,17 +1,15 @@
 import { findIndex, areInContact } from './util';
-import config, {
-  defaultFood as _defaultFood, defaultVirus as _defaultVirus, gameWidth, gameHeight, respawnTimeout,
-} from './config.json';
+import { gameWidth, gameHeight, respawnTimeout } from './config.json';
 import {
-  playerList, eatFood, eatVirus, eatPlayer, isAlive, respawnPlayer,
+  eatFood, eatVirus, eatPlayer, isAlive, respawnPlayer,
 } from './player';
+import { moveVirus } from './virus';
 import {
-  virusList, createVirus, removeVirus, moveVirus,
-} from './virus';
-import { foodList, createFood, removeFood } from './food';
+  sockets, playerList, foodList, virusList,
+} from './global';
+
 
 let leaderboard = [];
-export const sockets = [];
 let damage = false;
 
 export function interaction() {
@@ -20,7 +18,7 @@ export function interaction() {
     const playerIndex = findIndex(playerList, player.id);
     foodList.forEach((food) => {
       if (areInContact(food, player)) {
-        sockets[player.id].emit("eat");
+        sockets[player.id].emit('eat');
         res = true;
         eatFood(playerIndex, findIndex(foodList, food.id));
       }
@@ -29,7 +27,7 @@ export function interaction() {
       if (areInContact(virus, player)) {
         eatVirus(playerIndex, findIndex(virusList, virus.id));
         if (isAlive(player.id)) {
-          sockets[player.id].emit("damage");
+          sockets[player.id].emit('damage');
           damage = true;
           setTimeout(() => {
             damage = false;
@@ -50,48 +48,6 @@ export function interaction() {
   return res;
 }
 
-export function numberOfFoodAndVirusToCreateOrRemove() {
-  const len = playerList.length;
-  const { defaultFood } = config;
-  const { defaultVirus } = config;
-  let minusFood = 0;
-  let minusVirus = 0;
-  const factor = 5;
-  if (len >= factor && len < (2 * factor)) {
-    minusFood = defaultFood / factor;
-    minusVirus = defaultVirus / factor;
-  } else if (len >= (2 * factor) && len < (3 * factor)) {
-    minusFood = (2 * defaultFood) / factor;
-    minusVirus = (2 * defaultVirus) / factor;
-  } else if (len >= (3 * factor) && len < (4 * factor)) {
-    minusFood = (3 * defaultFood) / factor;
-    minusVirus = (3 * defaultVirus) / factor;
-  } else if (len >= (4 * factor) && len < (5 * factor)) {
-    minusFood = (4 * defaultFood) / factor;
-    minusVirus = (4 * defaultVirus) / factor;
-  } else if (len >= (5 * factor)) {
-    minusFood = (5 * defaultFood) / factor;
-    minusVirus = (5 * defaultVirus) / factor;
-  }
-  const res = {
-    minusFood,
-    minusVirus,
-  };
-  return res;
-}
-
-export function initGameBoard() {
-  const numbers = numberOfFoodAndVirusToCreateOrRemove();
-  createFood(_defaultFood - numbers.minusFood);
-  createVirus(_defaultVirus - numbers.minusVirus);
-}
-
-export function removeVirusAndFood() {
-  const numbers = numberOfFoodAndVirusToCreateOrRemove();
-  removeFood(_defaultFood - numbers.minusFood);
-  removeVirus(_defaultVirus - numbers.minusVirus);
-}
-
 export function updateGameBoard() {
   moveVirus();
   const interactionHappend = interaction();
@@ -104,7 +60,7 @@ export function updateGameBoard() {
         sockets[player.id].emit('died');
         setTimeout(() => {
           respawnPlayer(player.id);
-        }, 5000);
+        }, respawnTimeout);
         sockets[player.id].emit('died');
         sockets[player.id].emit('message', 'You died !');
       }

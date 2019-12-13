@@ -125,29 +125,35 @@
                 var ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.save();
-                if (x_player > canvas.width / 2 && x_player + canvas.width / 2 < width) {
-                    ctx.translate(canvas.width / 2 - x_player, 0);
+                if (canvas.width < width) {
+                    if (x_player > canvas.width / 2 && x_player + canvas.width / 2 < width) {
+                        ctx.translate(canvas.width / 2 - x_player, 0);
+                    }
+                    else if (x_player + canvas.width / 2 >= width) {
+                        ctx.translate(canvas.width - width, 0);
+                    }
                 }
-                else if (x_player + canvas.width / 2 >= width) {
-                    ctx.translate(canvas.width - width, 0);
-                }
-                if (y_player > canvas.height / 2 && y_player + canvas.height / 2 < height) {
-                    ctx.translate(0, canvas.height / 2 - y_player);
-                }
-                else if (y_player + canvas.height / 2 >= height) {
-                    ctx.translate(0, canvas.height - height);
+                if (canvas.height < height) {
+                    if (y_player > canvas.height / 2 && y_player + canvas.height / 2 < height) {
+                        ctx.translate(0, canvas.height / 2 - y_player);
+                    }
+                    else if (y_player + canvas.height / 2 >= height) {
+                        ctx.translate(0, canvas.height - height);
+                    }
                 }
                 ctx.fillStyle = "LightGray";
                 ctx.fillRect(0, 0, width, height);
                 players.forEach((player) => {
-                    ctx.beginPath();
-                    ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
-                    ctx.fillStyle = 'blue';
-                    ctx.fill();
-                    ctx.font = "10px Arial";
-                    ctx.fillStyle = "white";
-                    ctx.fillText(player.mass, player.x - player.radius / 2, player.y + player.radius / 3);
-                    ctx.closePath();
+                    if (player.alive) {
+                        ctx.beginPath();
+                        ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
+                        ctx.fillStyle = 'blue';
+                        ctx.fill();
+                        ctx.font = "10px Arial";
+                        ctx.fillStyle = "white";
+                        ctx.fillText(player.mass, player.x - player.radius / 2, player.y + player.radius / 3);
+                        ctx.closePath();
+                    }
                 });
                 food.forEach((food) => {
                     ctx.fillStyle = 'green';
@@ -172,17 +178,17 @@
                 var largeurLeaderboard = 310;
                 ctx.font = "30px Arial";
                 ctx.fillStyle = "white";
-                ctx.fillText("Leaderboard", canvas.width - largeurLeaderboard + 25, decalage);
+                ctx.fillText("Leaderboard", Math.min(canvas.width, width) - largeurLeaderboard + 25, decalage);
                 decalage += 40;
                 leaderboard.forEach((player) => {
                     ctx.font = "20px Arial";
                     ctx.fillStyle = "white";
-                    ctx.fillText(player.id + " : " + player.mass, canvas.width - largeurLeaderboard + 10, decalage);
+                    ctx.fillText(player.id + " : " + player.mass, Math.min(canvas.width, width) - largeurLeaderboard + 10, decalage);
                     decalage += 25;
                 });
                 context.fillStyle = "#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.fillRect(canvas.width - largeurLeaderboard, 0, canvas.width, decalage);
+                ctx.fillRect(Math.min(canvas.width, width) - largeurLeaderboard, 0, Math.min(canvas.width, width), decalage);
 
                 //chat
                 decalage = 15;

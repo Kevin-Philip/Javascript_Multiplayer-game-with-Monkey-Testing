@@ -1,16 +1,22 @@
 import express from 'express';
-import config from './config.json';
-import { findIndex } from './util';
-import { playerList, createPlayer, movePlayer } from './player';
 import {
-  initGameBoard, removeVirusAndFood, updateGameBoard, gameLoop, sockets,
-} from './gameboard';
+  host, port, defaultFood, defaultVirus,
+} from './config.json';
+import { findIndex } from './util';
+import { createFood } from './food';
+import { createPlayer, movePlayer } from './player';
+import { updateGameBoard, gameLoop } from './gameboard';
+import { sockets, playerList } from './global';
+import { createVirus, removeVirus } from './virus';
 
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 app.use(express.static(`${__dirname}/../client`));
+
+// On commence par initialiser les foods du gameboard
+createFood(defaultFood);
 
 io.on('connection', (socket) => {
   console.log(`[INFO] New player with id : ${socket.id}is trying to connect!`);
@@ -26,15 +32,15 @@ io.on('connection', (socket) => {
   console.log(`[INFO] Player ${socket.id} connected!`);
   io.emit('message', `${socket.id} joined the game !`);
 
-  // On créé les foods & virus
-  initGameBoard();
+  // On ajoute des virus pour chaque joueur qui se connecte
+  createVirus(defaultVirus);
 
   // Dans le cas d'une déconnection du joueur, on l'enlève de l'array des joueurs et on diffuse sa
   // déconnection dans le chat
   socket.on('disconnect', () => {
     const playerIndex = findIndex(playerList, socket.id);
     if (playerIndex > -1) {
-      removeVirusAndFood();
+      removeVirus(defaultVirus);
       playerList.splice(playerIndex, 1);
       io.emit('message', `${socket.id} left the game`);
       console.log(`[INFO] Player ${socket.id} left!`);
@@ -58,8 +64,6 @@ setInterval(updateGameBoard, 1000 / 60);
 setInterval(gameLoop, 1000 / 60);
 
 // Configuration serveur
-const { host } = config;
-const { port } = config;
 http.listen(port, host, () => {
   console.log(`[DEBUG] Listening on ${host}:${port}`);
 });

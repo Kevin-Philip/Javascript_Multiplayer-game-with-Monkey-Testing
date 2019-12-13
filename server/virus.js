@@ -3,9 +3,7 @@ import {
   virusMass, virusChangeDirectionFrequencyMax, virusChangeDirectionFrequencyMin, virusSpeed,
   virusTracking, virusChangeTargetFrequency, gameWidth, gameHeight,
 } from './config.json';
-import { playerList } from './player';
-
-export const virusList = [];
+import { playerList, virusList } from './global';
 
 export function createVirus(numberToCreate) {
   const radius = massToRadius(virusMass);
