@@ -109,18 +109,18 @@ export function isAlive(playerId) {
 export function movePlayer(playerMovement, playerId) {
   const playerIndex = findIndex(playerList, playerId);
   const player = playerList[playerIndex];
-  const { speed } = playerList[playerIndex];
+  const playerSpd = playerList[playerIndex].speed;
 
   if (playerMovement.left && player.x > 0 + player.radius) {
-    playerList[playerIndex].x -= speed;
+    playerList[playerIndex].x -= playerSpd;
   }
   if (playerMovement.right && player.x < gameWidth - player.radius) {
-    playerList[playerIndex].x += speed;
+    playerList[playerIndex].x += playerSpd;
   }
   if (playerMovement.up && player.y > 0 + player.radius) {
-    playerList[playerIndex].y -= speed;
+    playerList[playerIndex].y -= playerSpd;
   }
   if (playerMovement.down && player.y < gameHeight - player.radius) {
-    playerList[playerIndex].y += speed;
+    playerList[playerIndex].y += playerSpd;
   }
 }

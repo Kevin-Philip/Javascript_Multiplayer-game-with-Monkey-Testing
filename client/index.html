@@ -123,28 +123,34 @@
                 var x_player = players[playerIndex].x
                 var y_player = players[playerIndex].y
                 var ctx = canvas.getContext('2d');
+                var x_camera = 0;
+                var y_camera = 0;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.save();
                 if (canvas.width < width) {
                     if (x_player > canvas.width / 2 && x_player + canvas.width / 2 < width) {
                         ctx.translate(canvas.width / 2 - x_player, 0);
+                        x_camera = x_player - canvas.width / 2;
                     }
                     else if (x_player + canvas.width / 2 >= width) {
                         ctx.translate(canvas.width - width, 0);
+                        x_camera = width - canvas.width;
                     }
                 }
                 if (canvas.height < height) {
                     if (y_player > canvas.height / 2 && y_player + canvas.height / 2 < height) {
                         ctx.translate(0, canvas.height / 2 - y_player);
+                        y_camera = y_player - canvas.height / 2;
                     }
                     else if (y_player + canvas.height / 2 >= height) {
                         ctx.translate(0, canvas.height - height);
+                        y_camera = height - canvas.height;
                     }
                 }
                 ctx.fillStyle = "LightGray";
                 ctx.fillRect(0, 0, width, height);
                 players.forEach((player) => {
-                    if (player.alive) {
+                    if (player.alive && player.x >= x_camera && player.x <= x_camera+canvas.width && player.y >= y_camera && player.y <= y_camera+canvas.height) {
                         ctx.beginPath();
                         ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
                         ctx.fillStyle = 'blue';
@@ -156,26 +162,30 @@
                     }
                 });
                 food.forEach((food) => {
-                    ctx.fillStyle = 'green';
-                    if (food.magic) {
-                        ctx.fillStyle = 'purple';
+                    if (food.x >= x_camera && food.x <= x_camera+canvas.width && food.y >= y_camera && food.y <= y_camera+canvas.height) {
+                        ctx.fillStyle = 'green';
+                        if (food.magic) {
+                            ctx.fillStyle = 'purple';
+                        }
+                        ctx.beginPath();
+                        ctx.arc(food.x, food.y, food.radius, 0, 2 * Math.PI, false);
+                        ctx.fill();
+                        ctx.closePath();
                     }
-                    ctx.beginPath();
-                    ctx.arc(food.x, food.y, food.radius, 0, 2 * Math.PI, false);
-                    ctx.fill();
-                    ctx.closePath();
                 });
                 virus.forEach((virus) => {
-                    ctx.beginPath();
-                    ctx.arc(virus.x, virus.y, virus.radius, 0, 2 * Math.PI, false);
-                    ctx.fillStyle = 'red';
-                    ctx.fill();
-                    ctx.closePath();
+                    if (virus.x >= x_camera && virus.x <= x_camera+canvas.width && virus.y >= y_camera && virus.y <= y_camera+canvas.height) {
+                        ctx.beginPath();
+                        ctx.arc(virus.x, virus.y, virus.radius, 0, 2 * Math.PI, false);
+                        ctx.fillStyle = 'red';
+                        ctx.fill();
+                        ctx.closePath();
+                    }
                 })
                 ctx.restore();
                 //Leaderboard
                 var decalage = 35;
-                var largeurLeaderboard = 310;
+                var largeurLeaderboard = 315;
                 ctx.font = "30px Arial";
                 ctx.fillStyle = "white";
                 ctx.fillText("Leaderboard", Math.min(canvas.width, width) - largeurLeaderboard + 25, decalage);
@@ -189,19 +199,30 @@
                 context.fillStyle = "#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
                 ctx.fillRect(Math.min(canvas.width, width) - largeurLeaderboard, 0, Math.min(canvas.width, width), decalage);
+                console.log("min :"+Math.min(canvas.width, width));
+                console.log("canvas :"+canvas.width);
+                console.log("game :"+width);
+                console.log("largeurLeaderboard :"+(Math.min(canvas.width, width) - largeurLeaderboard));
 
                 //chat
-                decalage = 15;
+                decalage = 12;
                 ctx.font = "12px Arial";
                 ctx.fillStyle = "white";
                 var reversedMessages = [...messages];
+                var messageSize = 40;
+                var partSize = 0;
                 reversedMessages.reverse().slice(0, 5).forEach((message) => {
-                    ctx.fillText(message, 5, canvas.height - decalage);
-                    decalage += 15;
+                    while(message.length > 0){
+                        partSize = (message.length % messageSize) == 0 ? messageSize : (message.length % messageSize);
+                        ctx.fillText(message.substring(message.length - partSize, message.length).trim(), 10, Math.min(canvas.height, height) - decalage);
+                        decalage += 15;
+                        message = message.substring(0, message.length - partSize);
+                    }
+                    decalage += 5;
                 });
                 context.fillStyle = "#FFFFFF";
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.fillRect(0, canvas.height - decalage, 300, canvas.height);
+                ctx.fillRect(0, Math.min(canvas.height, height) - decalage, 300, Math.min(canvas.height, height));
             });
 
             const playerMovement = {
@@ -249,12 +270,15 @@
             });
 
             $('form').submit(() => {
-                socket.emit('message', $('#m').val());
+                msg = $('#m').val();
+                if (msg.trim().length > 0){
+                    socket.emit('message', msg);
+                }
                 $('#m').val('');
                 return false;
             });
             socket.on('message', function (msg) {
-                messages.push(msg);
+                    messages.push(msg);
             });
         });
     </script>
