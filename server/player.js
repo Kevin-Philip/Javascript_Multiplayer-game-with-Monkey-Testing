@@ -87,7 +87,9 @@ export function eatFood(playerIndex, foodIndex) {
 }
 
 export function eatVirus(playerIndex, virusIndex) {
-  playerList[playerIndex].mass -= virusList[virusIndex].mass;
+  playerList[playerIndex].mass -= ((playerList[playerIndex].mass * 0.1)
+    > virusList[virusIndex].mass) ? (Math.floor(playerList[playerIndex].mass * 0.1))
+    : virusList[virusIndex].mass;
   virusList.splice(virusIndex, 1);
   playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
   createVirus(1);
