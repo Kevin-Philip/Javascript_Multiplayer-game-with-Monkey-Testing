@@ -1,6 +1,6 @@
 {
     "host": "localhost",
-    "port": 8080,
+    "port": 3000,
     "virusTracking": true,
     "gameWidth": 2000,
     "gameHeight": 2000,
@@ -14,6 +14,8 @@
     "virusChangeDirectionFrequencyMax" : 75,
     "virusChangeDirectionFrequencyMin" : 10,
     "virusChangeTargetFrequency" : 300,
-    "respawnTimeout" : 5000,
-    "magicPourcentage" : 0.05
+    "respawnTimeout" : 7000,
+    "magicPourcentage" : 0.05,
+    "gameTime" : 30,
+    "stopTime" : 10
 }

@@ -57,6 +57,9 @@
     <audio id="eatSound">
         <source src="./eat.mp3" type="audio/ogg">
     </audio>
+    <audio id="gameStop">
+        <source src="./we_are_the_champions_8_bit.mp3" type="audio/ogg">
+    </audio>
     <audio id="music">
         <source src="./ievan-polkka.mp3" type="audio/ogg">
     </audio>
@@ -82,6 +85,8 @@
 
             socket.on('died', () => {
                 music.pause();
+                gameStop.pause();
+                gameStop.currentTime = 0
                 music.currentTime = 0;
                 diedSound.currentTime = 0;
                 diedSound.play();
@@ -105,6 +110,25 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             })
 
+            socket.on('reset', (leaderboardAtTheEnd, x) => {
+                music.pause();
+                diedSound.pause();
+                music.currentTime = 0;
+                diedSound.currentTime = 0;
+                gameStop.play();
+                console.log("reset");
+                var ctx = canvas.getContext('2d');
+                // Afficher le leaderboard à la place de you died
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "Gray";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "50px Arial";
+                ctx.textAlign = 'center';
+                ctx.fillStyle = "red";
+                ctx.fillText(x + " seconds", canvas.width / 2, canvas.height / 2);
+                ctx.textAlign = 'left';
+            })
+
             socket.on('eat', () => {
                 eatSound.currentTime = 0;
                 eatSound.play();
@@ -118,6 +142,7 @@
             })
 
             socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard) => {
+                gameStop.currentTime = 0
                 music.play();
                 music.volume = 0.2;
                 var x_player = players[playerIndex].x

@@ -45,3 +45,14 @@ export function findIndex(array, id) {
   }
   return -1;
 }
+
+export function setIntervalX(callback, delay, repetitions) {
+  let x = repetitions;
+  const intervalID = setInterval(() => {
+    callback(x);
+    x -= 1;
+    if (x === 0) {
+      clearInterval(intervalID);
+    }
+  }, delay);
+}

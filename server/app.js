@@ -1,11 +1,11 @@
 import express from 'express';
 import {
-  host, port, defaultFood, defaultVirus,
+  host, port, defaultFood, defaultVirus, gameTime, stopTime
 } from './config.json';
 import { findIndex } from './util';
 import { createFood } from './food';
 import { createPlayer, movePlayer } from './player';
-import { updateGameBoard, gameLoop } from './gameboard';
+import { updateGameBoard, gameLoop, resetGameBoard } from './gameboard';
 import { sockets, playerList } from './global';
 import { createVirus, removeVirus } from './virus';
 
@@ -63,6 +63,11 @@ io.on('connection', (socket) => {
 setInterval(updateGameBoard, 1000 / 60);
 setInterval(gameLoop, 1000 / 60);
 
+// On reset le gameboard toutes les ${gameTime} secondes
+setInterval(() => {
+  resetGameBoard(io);
+}, (1000 * (gameTime + stopTime)));
+
 // Configuration serveur
 http.listen(port, host, () => {
   console.log(`[DEBUG] Listening on ${host}:${port}`);
@@ -70,7 +75,7 @@ http.listen(port, host, () => {
 
 // TODO :
 // Refactor le code client
-// Linter le code back
 // Voir pour obliger le control+0 si le zoom n'est pas à 100%
-// Fini : Adapter lla longueur des message au chat
-// S'occuper du déploiement sur vm istic (voir pour docker)
+// Faire des parties de X minutes
+// Deployer sur une vm istic
+// Faire des tests d'intégration
