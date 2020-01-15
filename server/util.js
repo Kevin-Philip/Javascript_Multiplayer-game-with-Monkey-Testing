@@ -56,3 +56,9 @@ export function setIntervalX(callback, delay, repetitions) {
     }
   }, delay);
 }
+
+export function playerSort(player1, player2) {
+  const mass1 = player1.oldMass !== 0 ? player1.oldMass : player1.mass;
+  const mass2 = player2.oldMass !== 0 ? player2.oldMass : player2.mass;
+  return ((mass1 < mass2) ? 1 : -1);
+}

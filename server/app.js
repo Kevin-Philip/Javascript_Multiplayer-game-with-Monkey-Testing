@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  host, port, defaultFood, defaultVirus, gameTime, stopTime,
+  host, port, defaultFood, defaultVirus, gameTime,
 } from './config.json';
 import { findIndex } from './util';
 import { createFood } from './food';
@@ -12,6 +12,8 @@ import { createVirus, removeVirus } from './virus';
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
+let timer = gameTime;
 
 app.use(express.static(`${__dirname}/../client`));
 
@@ -61,12 +63,18 @@ io.on('connection', (socket) => {
 
 // On update presque constamment le game board et on affiche à 60fps les changements
 setInterval(updateGameBoard, 1000 / 60);
-setInterval(gameLoop, 1000 / 60);
+setInterval(() => {
+  gameLoop(timer);
+}, 1000 / 60);
 
 // On reset le gameboard toutes les ${gameTime} secondes
 setInterval(() => {
-  resetGameBoard(io);
-}, (1000 * (gameTime + stopTime)));
+  timer -= 1;
+  if (timer <= 0) {
+    resetGameBoard(io);
+    timer = gameTime;
+  }
+}, 1000);
 
 // Configuration serveur
 http.listen(port, host, () => {
@@ -74,8 +82,14 @@ http.listen(port, host, () => {
 });
 
 // TODO :
-// Refactor le code client - DONE
-// Voir pour obliger le control+0 si le zoom n'est pas à 100%
-// Faire des parties de X minutes - DONE
-// Deployer sur une vm istic
-// Faire des tests d'intégration
+// Done - Corriger l'affichage de leader (quand tu parcours les mass, si player.mass < 10, afficher 10
+// Done - Mourir doit clear le setTimeout des deux bonus
+// Done - Faire en sorte qu'un joueur ne puisse plus avoir une mass inférieur à 10, même en cas de bonus "j'ai une plus petite mass pendant quelques secondes"
+// Done - Corriger la masse du joueur qui s'affiche dans le leaderboard dans le cas où ce dernier est en bonus "j'ai une masse plus petite pendant un certains temps" (et oui il affiche pas la oldMass hélas)
+// Done - Mettre la variable damage en attribut de joueur
+// Done - Corriger un bug qui survient en multi mais j'arrive pas à savoir comment ni pourquoi, parfois mon joueur respawn plusieurs fois sans raison (peut être lié au fait que si un joueur marche sur le bonus 2, t'as fais changer les virus de positions sans vérifier qu'ils n'arrivaient pas sur un joueur)
+// In Progress (Reste juste à completer la méthode drawTimer dans client.js et décommenter l'appel à cette fonction dans draw) - Éventuellement afficher le temps restant de la partie dans un coin du gameboard (bonus mais assez important quand même)
+// Corriger tous les bugs de son (y'en a vrm plein)
+// Essayer de bidouiller le zoom
+// Afficher sur la page de fin le pseudo du joueur + Le titre Leaderboard
+// Faire les tests d'intégrations

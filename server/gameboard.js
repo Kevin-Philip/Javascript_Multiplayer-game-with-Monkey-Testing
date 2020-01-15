@@ -1,4 +1,4 @@
-import { findIndex, areInContact, setIntervalX } from './util';
+import { findIndex, areInContact, setIntervalX, playerSort } from './util';
 import {
   gameWidth, gameHeight, respawnTimeout, stopTime, defaultVirus,
 } from './config.json';
@@ -10,9 +10,7 @@ import {
   sockets, playerList, foodList, virusList,
 } from './global';
 
-
 let leaderboard = [];
-let damage = false;
 let gameIsRunning = true;
 let diedTimeout = null;
 
@@ -31,10 +29,10 @@ export function interaction() {
       if (areInContact(virus, player)) {
         eatVirus(playerIndex, findIndex(virusList, virus.id));
         if (isAlive(player.id) && gameIsRunning) {
+          player.damage = true;
           sockets[player.id].emit('damage');
-          damage = true;
           setTimeout(() => {
-            damage = false;
+            player.damage = false;
           }, 10);
         }
         res = true;
@@ -62,6 +60,8 @@ export function updateGameBoard() {
       playerList.forEach((player) => {
         if (!isAlive(player.id) && gameIsRunning) {
           player.alive = false;
+          clearTimeout(power3Timeout);
+          clearTimeout(power1Timeout);
           sockets[player.id].emit('died');
           diedTimeout = setTimeout(() => {
             respawnPlayer(player.id);
@@ -72,16 +72,16 @@ export function updateGameBoard() {
   }
 }
 
-export function gameLoop() {
+export function gameLoop(timer) {
   if (gameIsRunning) {
     playerList.forEach((player) => {
-      if (player.alive && !damage) {
+      if (player.alive && !player.damage) {
         const playerIndex = findIndex(playerList, player.id);
-        sockets[player.id].emit('draw', playerList, foodList, virusList, playerIndex, gameWidth, gameHeight, leaderboard);
+        sockets[player.id].emit('draw', playerList, foodList, virusList, playerIndex, gameWidth, gameHeight, leaderboard, timer);
       }
     });
     // On met à jour le leaderboard
-    const playerListSorted = playerList.sort((a, b) => ((a.mass < b.mass) ? 1 : -1));
+    const playerListSorted = playerList.sort((a, b) => playerSort(a, b));
     leaderboard = playerListSorted.slice(0, 5);
   }
 }
@@ -92,7 +92,6 @@ export function resetGameBoard(io) {
   clearTimeout(power1Timeout);
   const leaderboardAtTheEnd = leaderboard;
   gameIsRunning = false;
-  damage = false;
   removeVirus(virusList.length);
   setIntervalX((x) => {
     io.emit('reset', leaderboardAtTheEnd, x - 1);

@@ -30,7 +30,8 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
     ctx.font = '30px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'white';
-    ctx.fillText(`${player.id} : ${player.mass}`, canvas.width / 2, decalage);
+    const mass = player.mass < 10 ? 10 : player.mass;
+    ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, decalage);
     decalage += 70;
   });
   decalage += 200;
@@ -81,6 +82,11 @@ socket.on('speedUp', () => {
   }, 5000);
 });
 
+// Affiche le timer
+/* function drawTimer(ctx, timer) {
+
+} */
+
 // Affiche le chat
 function drawChat(ctx, height) {
   let decalage = 12;
@@ -127,7 +133,7 @@ function drawLeaderboard(ctx, width, leaderboard) {
 }
 
 // Dessine l'écran de jeu
-socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard) => {
+socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard, timer) => {
   this.gameStop.pause();
   this.gameStop.currentTime = 0;
   this.music.play();
@@ -203,6 +209,8 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
   drawLeaderboard(ctx, width, leaderboard);
   // Affiche le chat
   drawChat(ctx, height);
+  // Affiche le timer
+  // drawTimer(ctx, timer);
 });
 
 // Gestion des mouvements du joueur
