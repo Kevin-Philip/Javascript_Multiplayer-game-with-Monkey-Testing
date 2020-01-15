@@ -3,7 +3,7 @@ import {
   gameWidth, gameHeight, respawnTimeout, stopTime, defaultVirus,
 } from './config.json';
 import {
-  eatFood, eatVirus, eatPlayer, isAlive, respawnPlayer,
+  eatFood, eatVirus, eatPlayer, isAlive, respawnPlayer, power3Timeout, power1Timeout,
 } from './player';
 import { moveVirus, removeVirus, createVirus } from './virus';
 import {
@@ -14,6 +14,7 @@ import {
 let leaderboard = [];
 let damage = false;
 let gameIsRunning = true;
+let diedTimeout = null;
 
 export function interaction() {
   let res = false;
@@ -62,7 +63,7 @@ export function updateGameBoard() {
         if (!isAlive(player.id) && gameIsRunning) {
           player.alive = false;
           sockets[player.id].emit('died');
-          setTimeout(() => {
+          diedTimeout = setTimeout(() => {
             respawnPlayer(player.id);
           }, respawnTimeout);
         }
@@ -86,8 +87,12 @@ export function gameLoop() {
 }
 
 export function resetGameBoard(io) {
+  clearTimeout(diedTimeout);
+  clearTimeout(power3Timeout);
+  clearTimeout(power1Timeout);
   const leaderboardAtTheEnd = leaderboard;
   gameIsRunning = false;
+  damage = false;
   removeVirus(virusList.length);
   setIntervalX((x) => {
     io.emit('reset', leaderboardAtTheEnd, x - 1);

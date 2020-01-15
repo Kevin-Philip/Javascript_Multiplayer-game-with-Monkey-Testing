@@ -10,6 +10,11 @@ import {
   sockets, playerList, virusList, foodList,
 } from './global';
 
+// eslint-disable-next-line import/no-mutable-exports
+export let power1Timeout = null;
+// eslint-disable-next-line import/no-mutable-exports
+export let power3Timeout = null;
+
 export function createPlayer(playerId) {
   const radius = massToRadius(defaultPlayerMass);
   let position = randomPosition(radius);
@@ -55,11 +60,18 @@ export function eatFood(playerIndex, foodIndex) {
       foodList[foodIndex].mass *= 10;
     }
     if (power === 1) {
-      sockets[playerList[playerIndex].id].emit('speedUp');
-      playerList[playerIndex].speed *= 3;
-      setTimeout(() => {
-        playerList[playerIndex].speed /= 3;
-      }, 5000);
+      if (playerList[playerIndex].speed === playerSpeed) {
+        sockets[playerList[playerIndex].id].emit('speedUp');
+        playerList[playerIndex].speed *= 3;
+        power1Timeout = setTimeout(() => {
+          playerList[playerIndex].speed /= 3;
+        }, 5000);
+      } else { // Si il a deja un boost on ne cumule pas, on reset juste le timer
+        clearTimeout(power1Timeout);
+        power1Timeout = setTimeout(() => {
+          playerList[playerIndex].speed /= 3;
+        }, 5000);
+      }
     }
     if (power === 2) {
       let position;
@@ -74,7 +86,7 @@ export function eatFood(playerIndex, foodIndex) {
     if (power === 3) {
       const oldMass = playerList[playerIndex].mass;
       playerList[playerIndex].mass = 1;
-      setTimeout(() => {
+      power3Timeout = setTimeout(() => {
         playerList[playerIndex].mass = oldMass + 50;
         playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
       }, 8000);

@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  host, port, defaultFood, defaultVirus, gameTime, stopTime
+  host, port, defaultFood, defaultVirus, gameTime, stopTime,
 } from './config.json';
 import { findIndex } from './util';
 import { createFood } from './food';
@@ -74,8 +74,8 @@ http.listen(port, host, () => {
 });
 
 // TODO :
-// Refactor le code client
+// Refactor le code client - DONE
 // Voir pour obliger le control+0 si le zoom n'est pas à 100%
-// Faire des parties de X minutes
+// Faire des parties de X minutes - DONE
 // Deployer sur une vm istic
 // Faire des tests d'intégration
