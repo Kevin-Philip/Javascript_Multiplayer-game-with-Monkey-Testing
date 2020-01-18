@@ -87,7 +87,7 @@ http.listen(port, host, () => {
 // Done - Faire en sorte qu'un joueur ne puisse plus avoir une mass inférieur à 10, même en cas de bonus "j'ai une plus petite mass pendant quelques secondes"
 // Done - Corriger la masse du joueur qui s'affiche dans le leaderboard dans le cas où ce dernier est en bonus "j'ai une masse plus petite pendant un certains temps" (et oui il affiche pas la oldMass hélas)
 // Done - Mettre la variable damage en attribut de joueur
-// Done - Corriger un bug qui survient en multi mais j'arrive pas à savoir comment ni pourquoi, parfois mon joueur respawn plusieurs fois sans raison (peut être lié au fait que si un joueur marche sur le bonus 2, t'as fais changer les virus de positions sans vérifier qu'ils n'arrivaient pas sur un joueur)
+// In Progress - Corriger un bug qui survient en multi mais j'arrive pas à savoir comment ni pourquoi, parfois mon joueur respawn plusieurs fois sans raison (peut être lié au fait que si un joueur marche sur le bonus 2, t'as fais changer les virus de positions sans vérifier qu'ils n'arrivaient pas sur un joueur)
 // In Progress (Reste juste à completer la méthode drawTimer dans client.js et décommenter l'appel à cette fonction dans draw) - Éventuellement afficher le temps restant de la partie dans un coin du gameboard (bonus mais assez important quand même)
 // Corriger tous les bugs de son (y'en a vrm plein)
 // Essayer de bidouiller le zoom

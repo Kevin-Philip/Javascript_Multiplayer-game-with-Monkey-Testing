@@ -127,7 +127,7 @@ export function eatPlayer(playerIndex, otherIndex) {
 
 export function isAlive(playerId) {
   const playerIndex = findIndex(playerList, playerId);
-  return playerList[playerIndex].mass > 10;
+  return playerList[playerIndex].mass >= 10;
 }
 
 export function movePlayer(playerMovement, playerId) {
