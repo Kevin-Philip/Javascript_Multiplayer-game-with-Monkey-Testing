@@ -51,7 +51,6 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
   ctx.textAlign = 'center';
   ctx.fillStyle = 'red';
   ctx.fillText(`${x} seconds`, canvas.width / 2, decalage);
-  ctx.textAlign = 'left';
 });
 
 // Quand le joueur meurt
@@ -68,7 +67,6 @@ socket.on('died', () => {
   ctx.textAlign = 'center';
   ctx.fillStyle = 'red';
   ctx.fillText('YOU DIED !', canvas.width / 2, canvas.height / 2);
-  ctx.textAlign = 'left';
 });
 
 // Quand le joueur est touché par un virus
@@ -106,6 +104,7 @@ function drawChat(ctx, height) {
   let decalage = 12;
   ctx.font = '12px Arial';
   ctx.fillStyle = 'white';
+  ctx.textAlign = 'left';
   const reversedMessages = [...messages];
   const messageSize = 40;
   const minHeight = Math.min(canvas.height, height);
@@ -133,6 +132,7 @@ function drawLeaderboard(ctx, width, leaderboard) {
   const largeurLeaderboard = 315;
   ctx.font = '30px Arial';
   ctx.fillStyle = 'white';
+  ctx.textAlign = 'left';
   ctx.fillText('Leaderboard', minWidth - largeurLeaderboard + 25, decalage);
   decalage += 40;
   leaderboard.forEach((player) => {
@@ -166,73 +166,83 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
   let yCamera = 0;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save();
+  const browserZoomLevel = Math.round(window.devicePixelRatio * 100);
+  if (browserZoomLevel < 100) {
+    ctx.fillStyle = 'Gray';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '50px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'red';
+    ctx.fillText('Please reset the zoom level', canvas.width / 2, canvas.height / 2);
+  } else {
   // Centre la camera sur le joueur
-  if (canvas.width < width) {
-    if (xPlayer > canvas.width / 2 && xPlayer + canvas.width / 2 < width) {
-      xCamera = xPlayer - canvas.width / 2;
-    } else if (xPlayer + canvas.width / 2 >= width) {
-      xCamera = width - canvas.width;
+    if (canvas.width < width) {
+      if (xPlayer > canvas.width / 2 && xPlayer + canvas.width / 2 < width) {
+        xCamera = xPlayer - canvas.width / 2;
+      } else if (xPlayer + canvas.width / 2 >= width) {
+        xCamera = width - canvas.width;
+      }
+      ctx.translate(-xCamera, 0);
     }
-    ctx.translate(-xCamera, 0);
-  }
-  if (canvas.height < height) {
-    if (yPlayer > canvas.height / 2 && yPlayer + canvas.height / 2 < height) {
-      yCamera = yPlayer - canvas.height / 2;
-    } else if (yPlayer + canvas.height / 2 >= height) {
-      yCamera = height - canvas.height;
+    if (canvas.height < height) {
+      if (yPlayer > canvas.height / 2 && yPlayer + canvas.height / 2 < height) {
+        yCamera = yPlayer - canvas.height / 2;
+      } else if (yPlayer + canvas.height / 2 >= height) {
+        yCamera = height - canvas.height;
+      }
+      ctx.translate(0, -yCamera);
     }
-    ctx.translate(0, -yCamera);
-  }
-  // Affiche le terrain de jeu
-  ctx.fillStyle = 'LightGray';
-  ctx.fillRect(0, 0, width, height);
-  // Affiche chaque joueur
-  players.forEach((currentPlayer) => {
-    if (currentPlayer.alive && currentPlayer.x >= xCamera
+    // Affiche le terrain de jeu
+    ctx.fillStyle = 'LightGray';
+    ctx.fillRect(0, 0, width, height);
+    // Affiche chaque joueur
+    players.forEach((currentPlayer) => {
+      if (currentPlayer.alive && currentPlayer.x >= xCamera
       && currentPlayer.x <= xCamera + canvas.width
         && currentPlayer.y >= yCamera && currentPlayer.y <= yCamera + canvas.height) {
-      ctx.beginPath();
-      ctx.arc(currentPlayer.x, currentPlayer.y, currentPlayer.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = 'blue';
-      ctx.fill();
-      ctx.font = '10px Arial';
-      ctx.fillStyle = 'white';
-      const centrage = currentPlayer.mass >= 20 ? 2 : 3;
-      ctx.fillText(currentPlayer.mass - 10, currentPlayer.x - currentPlayer.radius / centrage,
-        currentPlayer.y + currentPlayer.radius / 3);
-      ctx.closePath();
-    }
-  });
-  // Affiche chaque nourriture
-  food.forEach((currentFood) => {
-    if (currentFood.x >= xCamera && currentFood.x <= xCamera + canvas.width
-        && currentFood.y >= yCamera && currentFood.y <= yCamera + canvas.height) {
-      ctx.fillStyle = 'green';
-      if (currentFood.magic) {
-        ctx.fillStyle = 'purple';
+        ctx.beginPath();
+        ctx.arc(currentPlayer.x, currentPlayer.y, currentPlayer.radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.font = '10px Arial';
+        ctx.fillStyle = 'white';
+        const centrage = currentPlayer.mass >= 20 ? 2 : 3;
+        ctx.fillText(currentPlayer.mass - 10, currentPlayer.x - currentPlayer.radius / centrage,
+          currentPlayer.y + currentPlayer.radius / 3);
+        ctx.closePath();
       }
-      ctx.beginPath();
-      ctx.arc(currentFood.x, currentFood.y, currentFood.radius, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.closePath();
-    }
-  });
-  // Affiche chaque virus
-  virus.forEach((currentVirus) => {
-    if (currentVirus.x >= xCamera && currentVirus.x <= xCamera + canvas.width
+    });
+    // Affiche chaque nourriture
+    food.forEach((currentFood) => {
+      if (currentFood.x >= xCamera && currentFood.x <= xCamera + canvas.width
+        && currentFood.y >= yCamera && currentFood.y <= yCamera + canvas.height) {
+        ctx.fillStyle = 'green';
+        if (currentFood.magic) {
+          ctx.fillStyle = 'purple';
+        }
+        ctx.beginPath();
+        ctx.arc(currentFood.x, currentFood.y, currentFood.radius, 0, 2 * Math.PI, false);
+        ctx.fill();
+        ctx.closePath();
+      }
+    });
+    // Affiche chaque virus
+    virus.forEach((currentVirus) => {
+      if (currentVirus.x >= xCamera && currentVirus.x <= xCamera + canvas.width
         && currentVirus.y >= yCamera && currentVirus.y <= yCamera + canvas.height) {
-      ctx.beginPath();
-      ctx.arc(currentVirus.x, currentVirus.y, currentVirus.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = 'red';
-      ctx.fill();
-      ctx.closePath();
-    }
-  });
-  ctx.restore();
-  // Affiche le Leaderboard
-  drawLeaderboard(ctx, width, leaderboard);
-  // Affiche le chat
-  drawChat(ctx, height);
+        ctx.beginPath();
+        ctx.arc(currentVirus.x, currentVirus.y, currentVirus.radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+      }
+    });
+    ctx.restore();
+    // Affiche le Leaderboard
+    drawLeaderboard(ctx, width, leaderboard);
+    // Affiche le chat
+    drawChat(ctx, height);
+  }
   // Affiche le timer
   drawTimer(ctx, timer);
 });
