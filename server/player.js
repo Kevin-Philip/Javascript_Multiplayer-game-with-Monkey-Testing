@@ -71,11 +71,8 @@ export function eatFood(playerIndex, foodIndex) {
         power1Timeout = setTimeout(() => {
           player.speed /= 3;
         }, 5000);
-      } else { // Si il a deja un boost on ne cumule pas, on reset juste le timer
-        clearTimeout(power1Timeout);
-        power1Timeout = setTimeout(() => {
-          player.speed /= 3;
-        }, 5000);
+      } else { // Si il a deja un boost on ne cumule pas, on fait comme si power === 0;
+        foodList[foodIndex].mass *= 10;
       }
     }
     if (power === 2) {
