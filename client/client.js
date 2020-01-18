@@ -43,7 +43,6 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
   leaderboardAtTheEnd.forEach((player) => {
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
-    mass -= 10;
     ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, pourcentHeight * relativeHeight);
     relativeHeight += 8;
   });
@@ -141,7 +140,6 @@ function drawLeaderboard(ctx, width, leaderboard) {
     ctx.fillStyle = 'white';
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
-    mass -= 10;
     ctx.fillText(`${player.id} : ${mass}`, minWidth - largeurLeaderboard + 10, decalage);
     decalage += 25;
   });
@@ -174,7 +172,7 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
     ctx.font = '50px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'red';
-    ctx.fillText('Please reset the zoom level', canvas.width / 2, canvas.height / 2);
+    ctx.fillText('Please reset the zoom level (Ctrl + num0)', canvas.width / 2, canvas.height / 2);
   } else {
   // Centre la camera sur le joueur
     if (canvas.width < width) {
@@ -207,8 +205,7 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
         ctx.fill();
         ctx.font = '10px Arial';
         ctx.fillStyle = 'white';
-        const centrage = currentPlayer.mass >= 20 ? 2 : 3;
-        ctx.fillText(currentPlayer.mass - 10, currentPlayer.x - currentPlayer.radius / centrage,
+        ctx.fillText(currentPlayer.mass, currentPlayer.x - currentPlayer.radius / 2,
           currentPlayer.y + currentPlayer.radius / 3);
         ctx.closePath();
       }
