@@ -47,6 +47,7 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
 // Quand le joueur meurt
 socket.on('died', () => {
   this.music.pause();
+  this.diedSound.currentTime = 0;
   this.diedSound.play();
   console.log('died');
   const ctx = canvas.getContext('2d');
@@ -62,6 +63,7 @@ socket.on('died', () => {
 
 // Quand le joueur est touché par un virus
 socket.on('damage', () => {
+  this.damageSound.currentTime = 0;
   this.damageSound.play();
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = 'red';
@@ -70,6 +72,7 @@ socket.on('damage', () => {
 
 // Quand le joueur mange
 socket.on('eat', () => {
+  this.eatSound.currentTime = 0;
   this.eatSound.play();
 });
 

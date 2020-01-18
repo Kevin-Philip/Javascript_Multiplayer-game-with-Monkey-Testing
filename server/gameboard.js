@@ -1,4 +1,6 @@
-import { findIndex, areInContact, setIntervalX, playerSort } from './util';
+import {
+  findIndex, areInContact, setIntervalX, playerSort,
+} from './util';
 import {
   gameWidth, gameHeight, respawnTimeout, stopTime, defaultVirus,
 } from './config.json';
@@ -58,7 +60,8 @@ export function updateGameBoard() {
     // Si une interaction a eu lieu, on vérifie que tous les joueurs soient en vie
     if (interactionHappend && gameIsRunning) {
       playerList.forEach((player) => {
-        if (!isAlive(player.id) && gameIsRunning) {
+        // Si le joueur vient de mourir, mais n'a pas encore été marqué comme mort
+        if (!isAlive(player.id) && player.alive && gameIsRunning) {
           player.alive = false;
           clearTimeout(power3Timeout);
           clearTimeout(power1Timeout);
