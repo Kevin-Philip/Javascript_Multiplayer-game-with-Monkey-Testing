@@ -24,33 +24,34 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
   this.music.volume = 0.5;
   console.log('reset');
   const ctx = canvas.getContext('2d');
-  let decalage = canvas.height / 4;
+  const pourcentHeight = (canvas.height / 100);
+  let relativeHeight = 10;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = 'Gray';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.font = '40px Arial';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#900000';
-  ctx.fillText('Leaderboard', canvas.width / 2, decalage);
-  decalage += 100;
+  ctx.fillText('Leaderboard', canvas.width / 2, pourcentHeight * relativeHeight);
+  relativeHeight = 25;
   ctx.font = '30px Arial';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'silver';
-  ctx.fillText(`You are : ${playerName}`, canvas.width / 2, decalage);
-  decalage += 100;
+  ctx.fillText(`You are : ${playerName}`, canvas.width / 2, pourcentHeight * relativeHeight);
+  relativeHeight = 40;
   ctx.fillStyle = 'White';
   leaderboardAtTheEnd.forEach((player) => {
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
     mass -= 10;
-    ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, decalage);
-    decalage += 70;
+    ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, pourcentHeight * relativeHeight);
+    relativeHeight += 8;
   });
-  decalage += 200;
+  relativeHeight = 90;
   ctx.font = '20px Arial';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'red';
-  ctx.fillText(`${x} seconds`, canvas.width / 2, decalage);
+  ctx.fillText(`${x} seconds`, canvas.width / 2, pourcentHeight * relativeHeight);
 });
 
 // Quand le joueur meurt
