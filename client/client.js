@@ -13,7 +13,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas, false);
 resizeCanvas();
 
-const socket = this.io();
+const socket = window.io();
 
 socket.on('reset', (leaderboardAtTheEnd, x) => {
   this.music.pause();
@@ -42,6 +42,7 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
   leaderboardAtTheEnd.forEach((player) => {
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
+    mass -= 10;
     ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, decalage);
     decalage += 70;
   });
@@ -139,6 +140,7 @@ function drawLeaderboard(ctx, width, leaderboard) {
     ctx.fillStyle = 'white';
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
+    mass -= 10;
     ctx.fillText(`${player.id} : ${mass}`, minWidth - largeurLeaderboard + 10, decalage);
     decalage += 25;
   });
@@ -185,16 +187,19 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
   ctx.fillStyle = 'LightGray';
   ctx.fillRect(0, 0, width, height);
   // Affiche chaque joueur
-  players.forEach((player) => {
-    if (player.alive && player.x >= xCamera && player.x <= xCamera + canvas.width
-        && player.y >= yCamera && player.y <= yCamera + canvas.height) {
+  players.forEach((currentPlayer) => {
+    if (currentPlayer.alive && currentPlayer.x >= xCamera
+      && currentPlayer.x <= xCamera + canvas.width
+        && currentPlayer.y >= yCamera && currentPlayer.y <= yCamera + canvas.height) {
       ctx.beginPath();
-      ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
+      ctx.arc(currentPlayer.x, currentPlayer.y, currentPlayer.radius, 0, 2 * Math.PI, false);
       ctx.fillStyle = 'blue';
       ctx.fill();
       ctx.font = '10px Arial';
       ctx.fillStyle = 'white';
-      ctx.fillText(player.mass, player.x - player.radius / 2, player.y + player.radius / 3);
+      const centrage = currentPlayer.mass >= 20 ? 2 : 3;
+      ctx.fillText(currentPlayer.mass - 10, currentPlayer.x - currentPlayer.radius / centrage,
+        currentPlayer.y + currentPlayer.radius / 3);
       ctx.closePath();
     }
   });
@@ -282,12 +287,12 @@ document.addEventListener('keyup', (event) => {
 });
 
 // Système de chat
-this.$('form').submit(() => {
-  const msg = this.$('#m').val();
+window.$('form').submit(() => {
+  const msg = window.$('#m').val();
   if (msg.trim().length > 0) {
     socket.emit('message', msg);
   }
-  this.$('#m').val('');
+  window.$('#m').val('');
   return false;
 });
 
