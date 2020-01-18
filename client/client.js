@@ -30,7 +30,8 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
     ctx.font = '30px Arial';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'white';
-    const mass = player.mass < 10 ? 10 : player.mass;
+    let mass = player.mass < 10 ? 10 : player.mass;
+    mass = player.oldMass > mass ? player.oldMass : mass;
     ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, decalage);
     decalage += 70;
   });
@@ -124,7 +125,9 @@ function drawLeaderboard(ctx, width, leaderboard) {
   leaderboard.forEach((player) => {
     ctx.font = '20px Arial';
     ctx.fillStyle = 'white';
-    ctx.fillText(`${player.id} : ${player.mass}`, minWidth - largeurLeaderboard + 10, decalage);
+    let mass = player.mass < 10 ? 10 : player.mass;
+    mass = player.oldMass > mass ? player.oldMass : mass;
+    ctx.fillText(`${player.id} : ${mass}`, minWidth - largeurLeaderboard + 10, decalage);
     decalage += 25;
   });
   context.fillStyle = '#FFFFFF';
