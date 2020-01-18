@@ -2,6 +2,7 @@ const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
 const messages = [];
+let playerName = 'NoNamePlayer';
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -23,14 +24,22 @@ socket.on('reset', (leaderboardAtTheEnd, x) => {
   this.music.volume = 0.5;
   console.log('reset');
   const ctx = canvas.getContext('2d');
-  let decalage = canvas.height / 3;
+  let decalage = canvas.height / 4;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = 'Gray';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = '40px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#900000';
+  ctx.fillText('Leaderboard', canvas.width / 2, decalage);
+  decalage += 100;
+  ctx.font = '30px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'silver';
+  ctx.fillText(`You are : ${playerName}`, canvas.width / 2, decalage);
+  decalage += 100;
+  ctx.fillStyle = 'White';
   leaderboardAtTheEnd.forEach((player) => {
-    ctx.font = '30px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'white';
     let mass = player.mass < 10 ? 10 : player.mass;
     mass = player.oldMass > mass ? player.oldMass : mass;
     ctx.fillText(`${player.id} : ${mass}`, canvas.width / 2, decalage);
@@ -85,9 +94,11 @@ socket.on('speedUp', () => {
 });
 
 // Affiche le timer
-/* function drawTimer(ctx, timer) {
-
-} */
+function drawTimer(ctx, timer) {
+  ctx.font = '30px Arial';
+  ctx.fillStyle = 'white';
+  ctx.fillText(`${timer}`, 15, 35, 40);
+}
 
 // Affiche le chat
 function drawChat(ctx, height) {
@@ -142,8 +153,12 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
   this.gameStop.currentTime = 0;
   this.music.play();
   this.music.volume = 0.2;
-  const xPlayer = players[playerIndex].x;
-  const yPlayer = players[playerIndex].y;
+  const player = players[playerIndex];
+  const xPlayer = player.x;
+  const yPlayer = player.y;
+  if (playerName !== player.id) {
+    playerName = player.id;
+  }
   const ctx = canvas.getContext('2d');
   let xCamera = 0;
   let yCamera = 0;
@@ -214,7 +229,7 @@ socket.on('draw', (players, food, virus, playerIndex, width, height, leaderboard
   // Affiche le chat
   drawChat(ctx, height);
   // Affiche le timer
-  // drawTimer(ctx, timer);
+  drawTimer(ctx, timer);
 });
 
 // Gestion des mouvements du joueur
