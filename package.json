@@ -4,10 +4,11 @@
   "description": "A simple distributed game",
   "main": "app.js",
   "scripts": {
-    "server": "babel-node ./server/app.js",
+    "server": "babel-node ./server/app.js --max-old-space-size=4096",
     "dev": "npm-run-all server",
     "start": "nodemon",
-    "test": "mocha ./server/test/* --require @babel/register"
+    "test": "mocha ./server/test/unit/* --require @babel/register",
+    "monkey" : "babel-node ./server/test/integration/monkey.test.js --max-old-space-size=4096"
   },
   "repository": {
     "type": "git",

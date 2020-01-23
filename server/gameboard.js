@@ -17,61 +17,81 @@ let gameIsRunning = true;
 let diedTimeout = null;
 
 export function interaction() {
-  let res = false;
-  playerList.forEach((player) => {
-    const playerIndex = findIndex(playerList, player.id);
-    foodList.forEach((food) => {
-      if (areInContact(food, player) && gameIsRunning) {
-        sockets[player.id].emit('eat');
-        res = true;
-        eatFood(playerIndex, findIndex(foodList, food.id));
-      }
-    });
-    virusList.forEach((virus) => {
-      if (areInContact(virus, player)) {
-        eatVirus(playerIndex, findIndex(virusList, virus.id));
-        if (isAlive(player.id) && gameIsRunning) {
-          player.damage = true;
-          sockets[player.id].emit('damage');
-          setTimeout(() => {
-            player.damage = false;
-          }, 10);
+  if (gameIsRunning) {
+    let res;
+    playerList.forEach((player) => {
+      res = false;
+      const playerIndex = findIndex(playerList, player.id);
+      foodList.forEach((food) => {
+        if (areInContact(food, player) && gameIsRunning) {
+          sockets[player.id].emit('eat');
+          eatFood(playerIndex, findIndex(foodList, food.id));
         }
-        res = true;
-      }
-    });
-    playerList.forEach((other) => {
-      if (player.id !== other.id) {
-        if (areInContact(player, other)) {
+      });
+      virusList.forEach((virus) => {
+        if (areInContact(virus, player)) {
+          eatVirus(playerIndex, findIndex(virusList, virus.id));
+          if (isAlive(player.id) && gameIsRunning) {
+            player.damage = true;
+            sockets[player.id].emit('damage');
+            setTimeout(() => {
+              player.damage = false;
+            }, 10);
+          }
           res = true;
-          eatPlayer(playerIndex, findIndex(playerList, other.id));
         }
+      });
+      playerList.forEach((other) => {
+        if (player.id !== other.id) {
+          if (areInContact(player, other)) {
+            res = true;
+            eatPlayer(playerIndex, findIndex(playerList, other.id));
+          }
+        }
+      });
+      // Si le joueur vient de mourir, mais n'a pas encore été marqué comme mort
+      if (gameIsRunning && !isAlive(player.id) && player.alive && res === true) {
+        player.alive = false;
+        clearTimeout(power3Timeout);
+        clearTimeout(power1Timeout);
+        sockets[player.id].emit('died');
+        // Update Virus Target
+        virusList.forEach((virus) => {
+          if (virus.target.id === player.id) {
+            virus.target = playerList[Math.floor(Math.random() * (playerList.length))];
+            virus.changeTarget = 0;
+          }
+        });
+        console.log(`[INFO] Player ${player.id} died`);
+        diedTimeout = setTimeout(() => {
+          respawnPlayer(player.id);
+        }, respawnTimeout);
       }
     });
+  }
+  playerList.forEach((player) => {
+    if (player.disconnecting) {
+      console.log(`[INFO] Player ${player.id} left!`);
+      const playerIndex = findIndex(playerList, player.id);
+      playerList.splice(playerIndex, 1);
+      clearTimeout(diedTimeout);
+      clearTimeout(power3Timeout);
+      clearTimeout(power1Timeout);
+      // Update Virus Target
+      virusList.forEach((virus) => {
+        if (virus.target.id === player.id) {
+          virus.target = playerList[Math.floor(Math.random() * (playerList.length))];
+          virus.changeTarget = 0;
+        }
+      });
+    }
   });
-  return res;
 }
 
 export function updateGameBoard() {
   if (gameIsRunning) {
     moveVirus();
-    const interactionHappend = interaction();
-
-    // Si une interaction a eu lieu, on vérifie que tous les joueurs soient en vie
-    if (interactionHappend && gameIsRunning) {
-      playerList.forEach((player) => {
-        // Si le joueur vient de mourir, mais n'a pas encore été marqué comme mort
-        if (!isAlive(player.id) && player.alive && gameIsRunning) {
-          player.alive = false;
-          clearTimeout(power3Timeout);
-          clearTimeout(power1Timeout);
-          sockets[player.id].emit('died');
-          diedTimeout = setTimeout(() => {
-            respawnPlayer(player.id);
-          }, respawnTimeout);
-        }
-      });
-    }
+    interaction();
   }
 }
 

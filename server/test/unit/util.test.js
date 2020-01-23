@@ -3,7 +3,7 @@
 import { expect } from 'chai';
 import {
   massToRadius, randomPosition, areInContact, isInContactWith, findIndex, playerSort,
-} from '../util';
+} from '../../util';
 
 describe('Util Tests', () => {
   describe('massToRadius Tests', () => {

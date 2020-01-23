@@ -32,6 +32,7 @@ export function createPlayer(playerId) {
     speed: playerSpeed,
     alive: true,
     damage: false,
+    disconnecting: false,
   };
   playerList.push(currentPlayer);
 }
@@ -44,21 +45,25 @@ export function respawnPlayer(playerId) {
     position = randomPosition(radius);
   }
   const playerIndex = findIndex(playerList, playerId);
-  playerList[playerIndex] = {
-    id: playerId,
-    x: position.x,
-    y: position.y,
-    radius,
-    mass: defaultPlayerMass,
-    oldMass: 0,
-    speed: playerSpeed,
-    alive: true,
-    damage: false,
-  };
+  if (playerIndex !== -1 && !playerList[playerIndex].disconnecting) {
+    playerList[playerIndex] = {
+      id: playerId,
+      x: position.x,
+      y: position.y,
+      radius,
+      mass: defaultPlayerMass,
+      oldMass: 0,
+      speed: playerSpeed,
+      alive: true,
+      damage: false,
+      disconnecting: false,
+    };
+  }
 }
 
 export function eatFood(playerIndex, foodIndex) {
   const player = playerList[playerIndex];
+  console.log(`[INFO] Player ${player.id} is eating food`);
   if (foodList[foodIndex].magic) {
     const power = Math.floor(Math.random() * 4);
     if (power === 0) {
@@ -70,7 +75,7 @@ export function eatFood(playerIndex, foodIndex) {
         player.speed *= 3;
         power1Timeout = setTimeout(() => {
           player.speed /= 3;
-        }, 5000);
+        }, 50000);
       } else { // Si il a deja un boost on ne cumule pas, on fait comme si power === 0;
         foodList[foodIndex].mass *= 10;
       }
@@ -106,6 +111,7 @@ export function eatFood(playerIndex, foodIndex) {
 }
 
 export function eatVirus(playerIndex, virusIndex) {
+  console.log(`[INFO] Player ${playerList[playerIndex].id} is eating virus`);
   playerList[playerIndex].mass -= ((playerList[playerIndex].mass * 0.1)
     > virusList[virusIndex].mass) ? (Math.floor(playerList[playerIndex].mass * 0.1))
     : virusList[virusIndex].mass;
@@ -116,6 +122,7 @@ export function eatVirus(playerIndex, virusIndex) {
 
 export function eatPlayer(playerIndex, otherIndex) {
   if (playerList[playerIndex].mass > playerList[otherIndex].mass) {
+    console.log(`[INFO] Player ${playerList[playerIndex].id} is eating player ${playerList[otherIndex].id}`);
     playerList[playerIndex].mass += playerList[otherIndex].mass;
     playerList[playerIndex].radius = massToRadius(playerList[playerIndex].mass);
     playerList[otherIndex].mass = 0;
@@ -130,7 +137,7 @@ export function isAlive(playerId) {
 export function movePlayer(playerMovement, playerId) {
   const playerIndex = findIndex(playerList, playerId);
   const player = playerList[playerIndex];
-  const playerSpd = playerList[playerIndex].speed;
+  const playerSpd = player.speed;
 
   if (playerMovement.left && player.x > 0 + player.radius) {
     playerList[playerIndex].x -= playerSpd;

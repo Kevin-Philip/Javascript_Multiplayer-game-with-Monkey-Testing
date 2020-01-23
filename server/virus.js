@@ -1,7 +1,9 @@
-import { massToRadius, randomPosition, isInContactWith } from './util';
+import {
+  massToRadius, randomPosition, isInContactWith, findIndex,
+} from './util';
 import {
   virusMass, virusChangeDirectionFrequencyMax, virusChangeDirectionFrequencyMin, virusSpeed,
-  virusTracking, virusChangeTargetFrequency, gameWidth, gameHeight,
+  virusTracking, gameWidth, gameHeight, virusChangeTargetFrequency,
 } from './config.json';
 import { playerList, virusList } from './global';
 
