@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    
+<head>
+    <title>SR - The Game</title>
+    <style>
+        canvas {
+            display: block;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font: 13px Helvetica, Arial;
+        }
+        
+        form {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        form input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+        
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <audio id="damageSound">
+        <source src="./roblox-death-sound.mp3" type="audio/ogg">
+    </audio>
+    <audio id="diedSound">
+        <source src="./dark-souls-you-died-sound.mp3" type="audio/ogg">
+    </audio>
+    <audio id="eatSound">
+        <source src="./eat.mp3" type="audio/ogg">
+    </audio>
+    <audio id="gameStop">
+        <source src="./we_are_the_champions_8_bit.mp3" type="audio/ogg">
+    </audio>
+    <audio id="music">
+        <source src="./ievan-polkka.mp3" type="audio/ogg">
+    </audio>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="./client.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+{
+    "host": "0.0.0.0",
+    "port": 3000,
+    "virusTracking": true,
+    "gameWidth": 2000,
+    "gameHeight": 2000,
+    "defaultFood": 400,
+    "defaultVirus" : 5,
+    "defaultPlayerMass": 10,
+    "foodMass": 2,
+    "virusMass": 10,
+    "playerSpeed" : 4,
+    "virusSpeed" : 2,
+    "virusChangeDirectionFrequencyMax" : 75,
+    "virusChangeDirectionFrequencyMin" : 10,
+    "respawnTimeout" : 7000,
+    "magicPourcentage" : 0.05,
+    "gameTime" : 600,
+    "stopTime" : 20,
+    "monkeyNumber" : 20
+}
