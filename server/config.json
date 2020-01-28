@@ -15,7 +15,7 @@
     "virusChangeDirectionFrequencyMin" : 10,
     "respawnTimeout" : 7000,
     "magicPourcentage" : 0.05,
-    "gameTime" : 600,
+    "gameTime" : 300,
     "stopTime" : 20,
     "monkeyNumber" : 20
 }
