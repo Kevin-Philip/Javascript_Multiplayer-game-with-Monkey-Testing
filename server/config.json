@@ -13,9 +13,10 @@
     "virusSpeed" : 2,
     "virusChangeDirectionFrequencyMax" : 75,
     "virusChangeDirectionFrequencyMin" : 10,
+    "virusChangeTargetFrequency" : 1500,
     "respawnTimeout" : 7000,
     "magicPourcentage" : 0.05,
-    "gameTime" : 600,
+    "gameTime" : 300,
     "stopTime" : 20,
     "monkeyNumber" : 20
 }
