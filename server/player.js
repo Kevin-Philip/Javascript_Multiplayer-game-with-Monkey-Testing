@@ -101,7 +101,7 @@ export function eatFood(playerIndex, foodIndex) {
         power3Timeout = setTimeout(() => {
           // Si j'ai effectivement encore le pouvoir
           if (player.oldMass !== 0) {
-            player.mass += player.oldMass + 50;
+            player.mass += player.oldMass * 1.25;
             player.oldMass = 0;
             player.radius = massToRadius(player.mass);
           }
