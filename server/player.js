@@ -74,8 +74,8 @@ export function eatFood(playerIndex, foodIndex) {
         sockets[player.id].emit('speedUp');
         player.speed *= 3;
         power1Timeout = setTimeout(() => {
-          player.speed /= 3;
-        }, 50000);
+          player.speed = playerSpeed;
+        }, 5000);
       } else { // Si il a deja un boost on ne cumule pas, on fait comme si power === 0;
         foodList[foodIndex].mass *= 10;
       }
@@ -95,13 +95,20 @@ export function eatFood(playerIndex, foodIndex) {
       });
     }
     if (power === 3) {
-      player.oldMass = player.mass;
-      player.mass = 10;
-      power3Timeout = setTimeout(() => {
-        player.mass += player.oldMass + 50;
-        player.oldMass = 0;
-        player.radius = massToRadius(player.mass);
-      }, 8000);
+      if (player.oldMass === 0) {
+        player.oldMass = player.mass;
+        player.mass = 10;
+        power3Timeout = setTimeout(() => {
+          // Si j'ai effectivement encore le pouvoir
+          if (player.oldMass !== 0) {
+            player.mass += player.oldMass * 1.25;
+            player.oldMass = 0;
+            player.radius = massToRadius(player.mass);
+          }
+        }, 8000);
+      }
+    } else { // Si il a deja un power 3 on ne cumule pas, on fait comme si power === 0;
+      foodList[foodIndex].mass *= 10;
     }
   }
   playerList[playerIndex].mass += foodList[foodIndex].mass;
