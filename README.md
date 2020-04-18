@@ -1,4 +1,4 @@
-# ESIR-SR-PM
+# Multiplayer game using NodeJS, Express, SocketIO, ESlint, Babel for ES6 with Monkey Testing
 A simple distributed game
 
 # How to use
